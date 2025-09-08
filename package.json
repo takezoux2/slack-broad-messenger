@@ -15,7 +15,7 @@
     "test:integration": "vitest run tests/integration",
     "test:contract": "vitest run tests/contract",
     "test:e2e": "playwright test",
-    "dev:firebase": "firebase emulators:start"
+    "dev:firebase": "npx firebase emulators:start"
   },
   "dependencies": {
     "@slack/web-api": "^7.10.0",
@@ -46,6 +46,7 @@
     "eslint-plugin-next": "^0.0.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "firebase-tools": "^14.15.2",
     "globals": "^16.3.0",
     "jsdom": "^26.1.0",
     "prettier": "^3.6.2",

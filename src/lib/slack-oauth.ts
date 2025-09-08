@@ -14,20 +14,18 @@ export interface SlackOAuthTokenResponse {
   };
 }
 
-export async function exchangeCodeForToken(
-  code: string,
-): Promise<SlackOAuthTokenResponse> {
+export async function exchangeCodeForToken(code: string): Promise<SlackOAuthTokenResponse> {
   const clientId = process.env.SLACK_CLIENT_ID;
   const clientSecret = process.env.SLACK_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
-    throw new Error("Slack OAuth credentials not configured");
+    throw new Error('Slack OAuth credentials not configured');
   }
 
-  const response = await fetch("https://slack.com/api/oauth.v2.access", {
-    method: "POST",
+  const response = await fetch('https://slack.com/api/oauth.v2.access', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
       client_id: clientId,

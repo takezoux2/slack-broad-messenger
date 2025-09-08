@@ -47,8 +47,8 @@
 ## Phase 3.1: Setup
 
 - [x] T001 Initialize Next.js project with TypeScript, Vitest, Playwright, and Firebase SDK
-- [ ] T002 [P] Configure ESLint, Prettier, and TypeScript strict mode in project root
-- [ ] T003 [P] Setup Firebase emulator configuration in firebase.json
+- [x] T002 [P] Configure ESLint, Prettier, and TypeScript strict mode in project root
+- [x] T003 [P] Setup Firebase emulator configuration in firebase.json
 - [ ] T004 [P] Create environment variables template .env.example with Firebase and Slack configs
 - [ ] T005 [P] Setup Vitest configuration with React Testing Library in vitest.config.ts
 - [ ] T006 [P] Setup Playwright configuration for E2E testing in playwright.config.ts

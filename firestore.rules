@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Channel lists - users can only access their own lists
+    match /channelLists/{listId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
+    }
+    
+    // Messages - users can only access their own messages
+    match /messages/{messageId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.senderId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.senderId;
+      
+      // Message deliveries subcollection
+      match /deliveries/{deliveryId} {
+        allow read: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/messages/$(messageId)).data.senderId;
+        allow write: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/messages/$(messageId)).data.senderId;
+      }
+    }
+    
+    // Channels - read-only for all authenticated users in the same workspace
+    match /channels/{channelId} {
+      allow read: if request.auth != null;
+    }
+    
+    // Slack users - read-only for all authenticated users in the same workspace
+    match /slackUsers/{slackUserId} {
+      allow read: if request.auth != null;
+    }
+  }
+}
