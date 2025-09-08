@@ -59,19 +59,19 @@
 
 ### Contract Tests (API Endpoints)
 
-- [ ] T007 [P] Contract test GET /api/auth/slack in tests/contract/auth-slack-get.test.ts
-- [ ] T008 [P] Contract test GET /api/auth/slack/callback in tests/contract/auth-slack-callback-get.test.ts
-- [ ] T009 [P] Contract test GET /api/channels in tests/contract/channels-get.test.ts
-- [ ] T010 [P] Contract test GET /api/channel-lists in tests/contract/channel-lists-get.test.ts
-- [ ] T011 [P] Contract test POST /api/channel-lists in tests/contract/channel-lists-post.test.ts
-- [ ] T012 [P] Contract test GET /api/channel-lists/{listId} in tests/contract/channel-lists-get-by-id.test.ts
-- [ ] T013 [P] Contract test PUT /api/channel-lists/{listId} in tests/contract/channel-lists-put.test.ts
-- [ ] T014 [P] Contract test DELETE /api/channel-lists/{listId} in tests/contract/channel-lists-delete.test.ts
-- [ ] T015 [P] Contract test GET /api/slack-users in tests/contract/slack-users-get.test.ts
-- [ ] T016 [P] Contract test GET /api/messages in tests/contract/messages-get.test.ts
-- [ ] T017 [P] Contract test POST /api/messages in tests/contract/messages-post.test.ts
-- [ ] T018 [P] Contract test GET /api/messages/{messageId} in tests/contract/messages-get-by-id.test.ts
-- [ ] T019 [P] Contract test GET /api/messages/{messageId}/deliveries in tests/contract/messages-deliveries-get.test.ts
+- [x] T007 [P] Contract test GET /api/auth/slack in tests/contract/auth-slack-get.test.ts
+- [x] T008 [P] Contract test GET /api/auth/slack/callback in tests/contract/auth-slack-callback-get.test.ts
+- [x] T009 [P] Contract test GET /api/channels in tests/contract/channels-get.test.ts
+- [x] T010 [P] Contract test GET /api/channel-lists in tests/contract/channel-lists-get.test.ts
+- [x] T011 [P] Contract test POST /api/channel-lists in tests/contract/channel-lists-post.test.ts
+- [x] T012 [P] Contract test GET /api/channel-lists/{listId} in tests/contract/channel-lists-get-by-id.test.ts
+- [x] T013 [P] Contract test PUT /api/channel-lists/{listId} in tests/contract/channel-lists-put.test.ts
+- [x] T014 [P] Contract test DELETE /api/channel-lists/{listId} in tests/contract/channel-lists-delete.test.ts
+- [x] T015 [P] Contract test GET /api/slack-users in tests/contract/slack-users-get.test.ts
+- [x] T016 [P] Contract test GET /api/messages in tests/contract/messages-get.test.ts
+- [x] T017 [P] Contract test POST /api/messages in tests/contract/messages-post.test.ts
+- [x] T018 [P] Contract test GET /api/messages/{messageId} in tests/contract/messages-get-by-id.test.ts
+- [x] T019 [P] Contract test GET /api/messages/{messageId}/deliveries in tests/contract/messages-deliveries-get.test.ts
 
 ### Integration Tests (User Stories)
 
