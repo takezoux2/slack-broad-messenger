@@ -1,0 +1,579 @@
+openapi: 3.0.3
+info:
+  title: Slack Broad Messenger API
+  description: API for sending messages to multiple Slack channels
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://slack-broad-messenger.vercel.app/api
+    description: Production server
+
+paths:
+  /auth/slack:
+    get:
+      summary: Initiate Slack OAuth flow
+      description: Redirects user to Slack OAuth authorization
+      responses:
+        "302":
+          description: Redirect to Slack OAuth
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /auth/slack/callback:
+    get:
+      summary: Handle Slack OAuth callback
+      description: Processes OAuth callback and creates user session
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "302":
+          description: Redirect to dashboard
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /channels:
+    get:
+      summary: Get user's available channels
+      description: Returns all channels the user can post to
+      security:
+        - firebaseAuth: []
+      responses:
+        "200":
+          description: List of channels
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  channels:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Channel"
+                  total:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /channel-lists:
+    get:
+      summary: Get user's channel lists
+      description: Returns all channel lists owned by the user
+      security:
+        - firebaseAuth: []
+      responses:
+        "200":
+          description: List of channel lists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  channelLists:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ChannelList"
+                  total:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      summary: Create new channel list
+      description: Creates a new channel list for the user
+      security:
+        - firebaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChannelListRequest"
+      responses:
+        "201":
+          description: Channel list created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /channel-lists/{listId}:
+    get:
+      summary: Get channel list by ID
+      description: Returns a specific channel list
+      security:
+        - firebaseAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ListId"
+      responses:
+        "200":
+          description: Channel list details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelListWithChannels"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    put:
+      summary: Update channel list
+      description: Updates an existing channel list
+      security:
+        - firebaseAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ListId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateChannelListRequest"
+      responses:
+        "200":
+          description: Channel list updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      summary: Delete channel list
+      description: Deletes a channel list
+      security:
+        - firebaseAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ListId"
+      responses:
+        "204":
+          description: Channel list deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /slack-users:
+    get:
+      summary: Get available Slack users
+      description: Returns users who can be selected as senders
+      security:
+        - firebaseAuth: []
+      responses:
+        "200":
+          description: List of Slack users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  slackUsers:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SlackUser"
+                  total:
+                    type: integer
+
+  /messages:
+    get:
+      summary: Get user's messages
+      description: Returns message history for the user
+      security:
+        - firebaseAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Message"
+                  total:
+                    type: integer
+                  hasMore:
+                    type: boolean
+
+    post:
+      summary: Send message to multiple channels
+      description: Sends a message to all channels in the specified list
+      security:
+        - firebaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendMessageRequest"
+      responses:
+        "202":
+          description: Message sending initiated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /messages/{messageId}:
+    get:
+      summary: Get message details
+      description: Returns detailed message with delivery status
+      security:
+        - firebaseAuth: []
+      parameters:
+        - $ref: "#/components/parameters/MessageId"
+      responses:
+        "200":
+          description: Message details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageWithDeliveries"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /messages/{messageId}/deliveries:
+    get:
+      summary: Get message delivery details
+      description: Returns delivery status for each channel
+      security:
+        - firebaseAuth: []
+      parameters:
+        - $ref: "#/components/parameters/MessageId"
+      responses:
+        "200":
+          description: Delivery details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deliveries:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MessageDelivery"
+                  summary:
+                    $ref: "#/components/schemas/DeliverySummary"
+
+components:
+  securitySchemes:
+    firebaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ListId:
+      name: listId
+      in: path
+      required: true
+      schema:
+        type: string
+    MessageId:
+      name: messageId
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    Channel:
+      type: object
+      required: [id, name, displayName, isPrivate, isArchived, isDeleted]
+      properties:
+        id:
+          type: string
+          description: Slack channel ID
+        name:
+          type: string
+          description: Channel name without #
+        displayName:
+          type: string
+          description: Full channel name with #
+        purpose:
+          type: string
+          description: Channel purpose
+        topic:
+          type: string
+          description: Channel topic
+        isPrivate:
+          type: boolean
+        isArchived:
+          type: boolean
+        isDeleted:
+          type: boolean
+        memberCount:
+          type: integer
+
+    ChannelList:
+      type: object
+      required:
+        [id, name, channelIds, channelCount, isActive, createdAt, updatedAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        channelIds:
+          type: array
+          items:
+            type: string
+          maxItems: 100
+        channelCount:
+          type: integer
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        lastUsedAt:
+          type: string
+          format: date-time
+
+    ChannelListWithChannels:
+      allOf:
+        - $ref: "#/components/schemas/ChannelList"
+        - type: object
+          properties:
+            channels:
+              type: array
+              items:
+                $ref: "#/components/schemas/Channel"
+
+    CreateChannelListRequest:
+      type: object
+      required: [name, channelIds]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        channelIds:
+          type: array
+          items:
+            type: string
+          maxItems: 100
+
+    UpdateChannelListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        channelIds:
+          type: array
+          items:
+            type: string
+          maxItems: 100
+
+    SlackUser:
+      type: object
+      required:
+        [id, name, displayName, avatar, isBot, isActive, hasPostingPermission]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        displayName:
+          type: string
+        realName:
+          type: string
+        avatar:
+          type: string
+        isBot:
+          type: boolean
+        isActive:
+          type: boolean
+        hasPostingPermission:
+          type: boolean
+
+    Message:
+      type: object
+      required:
+        [
+          id,
+          content,
+          status,
+          totalChannels,
+          successCount,
+          failureCount,
+          skipCount,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+          maxLength: 4000
+        status:
+          type: string
+          enum: [draft, sending, completed, failed]
+        totalChannels:
+          type: integer
+        successCount:
+          type: integer
+        failureCount:
+          type: integer
+        skipCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        sentAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    MessageWithDeliveries:
+      allOf:
+        - $ref: "#/components/schemas/Message"
+        - type: object
+          properties:
+            deliveries:
+              type: array
+              items:
+                $ref: "#/components/schemas/MessageDelivery"
+            channelList:
+              $ref: "#/components/schemas/ChannelList"
+            selectedSender:
+              $ref: "#/components/schemas/SlackUser"
+
+    SendMessageRequest:
+      type: object
+      required: [content, channelListId, selectedSenderId]
+      properties:
+        content:
+          type: string
+          maxLength: 4000
+        channelListId:
+          type: string
+        selectedSenderId:
+          type: string
+
+    MessageDelivery:
+      type: object
+      required: [id, channelId, channelName, status, retryCount]
+      properties:
+        id:
+          type: string
+        channelId:
+          type: string
+        channelName:
+          type: string
+        status:
+          type: string
+          enum: [pending, success, failed, skipped]
+        slackMessageId:
+          type: string
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+        retryCount:
+          type: integer
+        sentAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    DeliverySummary:
+      type: object
+      required: [total, success, failed, skipped, pending]
+      properties:
+        total:
+          type: integer
+        success:
+          type: integer
+        failed:
+          type: integer
+        skipped:
+          type: integer
+        pending:
+          type: integer
+
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
