@@ -46,7 +46,7 @@
 
 ## Phase 3.1: Setup
 
-- [ ] T001 Initialize Next.js project with TypeScript, Vitest, Playwright, and Firebase SDK
+- [x] T001 Initialize Next.js project with TypeScript, Vitest, Playwright, and Firebase SDK
 - [ ] T002 [P] Configure ESLint, Prettier, and TypeScript strict mode in project root
 - [ ] T003 [P] Setup Firebase emulator configuration in firebase.json
 - [ ] T004 [P] Create environment variables template .env.example with Firebase and Slack configs
@@ -204,7 +204,6 @@ _Applied during main() execution_
    - 6 entities (User, SlackUser, Channel, ChannelList, Message, MessageDelivery) → 6 model tasks [P]
    - 3 core libraries (auth-manager, channel-manager, message-sender) → 3 library tasks [P]
 3. **From Quickstart User Stories**:
-
    - 4 user stories → 4 integration tests [P] + 1 OAuth test [P]
    - Performance, security, error recovery scenarios → 3 E2E tests [P]
 

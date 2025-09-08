@@ -15,10 +15,10 @@ paths:
       summary: Initiate Slack OAuth flow
       description: Redirects user to Slack OAuth authorization
       responses:
-        "302":
+        '302':
           description: Redirect to Slack OAuth
-        "500":
-          $ref: "#/components/responses/ServerError"
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /auth/slack/callback:
     get:
@@ -36,12 +36,12 @@ paths:
           schema:
             type: string
       responses:
-        "302":
+        '302':
           description: Redirect to dashboard
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "500":
-          $ref: "#/components/responses/ServerError"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /channels:
     get:
@@ -50,7 +50,7 @@ paths:
       security:
         - firebaseAuth: []
       responses:
-        "200":
+        '200':
           description: List of channels
           content:
             application/json:
@@ -60,13 +60,13 @@ paths:
                   channels:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Channel"
+                      $ref: '#/components/schemas/Channel'
                   total:
                     type: integer
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "500":
-          $ref: "#/components/responses/ServerError"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
 
   /channel-lists:
     get:
@@ -75,7 +75,7 @@ paths:
       security:
         - firebaseAuth: []
       responses:
-        "200":
+        '200':
           description: List of channel lists
           content:
             application/json:
@@ -85,11 +85,11 @@ paths:
                   channelLists:
                     type: array
                     items:
-                      $ref: "#/components/schemas/ChannelList"
+                      $ref: '#/components/schemas/ChannelList'
                   total:
                     type: integer
-        "401":
-          $ref: "#/components/responses/Unauthorized"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
     post:
       summary: Create new channel list
@@ -101,18 +101,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateChannelListRequest"
+              $ref: '#/components/schemas/CreateChannelListRequest'
       responses:
-        "201":
+        '201':
           description: Channel list created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelList"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
+                $ref: '#/components/schemas/ChannelList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /channel-lists/{listId}:
     get:
@@ -121,18 +121,18 @@ paths:
       security:
         - firebaseAuth: []
       parameters:
-        - $ref: "#/components/parameters/ListId"
+        - $ref: '#/components/parameters/ListId'
       responses:
-        "200":
+        '200':
           description: Channel list details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelListWithChannels"
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
+                $ref: '#/components/schemas/ChannelListWithChannels'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
     put:
       summary: Update channel list
@@ -140,24 +140,24 @@ paths:
       security:
         - firebaseAuth: []
       parameters:
-        - $ref: "#/components/parameters/ListId"
+        - $ref: '#/components/parameters/ListId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateChannelListRequest"
+              $ref: '#/components/schemas/UpdateChannelListRequest'
       responses:
-        "200":
+        '200':
           description: Channel list updated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ChannelList"
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "404":
-          $ref: "#/components/responses/NotFound"
+                $ref: '#/components/schemas/ChannelList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
     delete:
       summary: Delete channel list
@@ -165,12 +165,12 @@ paths:
       security:
         - firebaseAuth: []
       parameters:
-        - $ref: "#/components/parameters/ListId"
+        - $ref: '#/components/parameters/ListId'
       responses:
-        "204":
+        '204':
           description: Channel list deleted
-        "404":
-          $ref: "#/components/responses/NotFound"
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /slack-users:
     get:
@@ -179,7 +179,7 @@ paths:
       security:
         - firebaseAuth: []
       responses:
-        "200":
+        '200':
           description: List of Slack users
           content:
             application/json:
@@ -189,7 +189,7 @@ paths:
                   slackUsers:
                     type: array
                     items:
-                      $ref: "#/components/schemas/SlackUser"
+                      $ref: '#/components/schemas/SlackUser'
                   total:
                     type: integer
 
@@ -212,7 +212,7 @@ paths:
             type: integer
             default: 0
       responses:
-        "200":
+        '200':
           description: List of messages
           content:
             application/json:
@@ -222,7 +222,7 @@ paths:
                   messages:
                     type: array
                     items:
-                      $ref: "#/components/schemas/Message"
+                      $ref: '#/components/schemas/Message'
                   total:
                     type: integer
                   hasMore:
@@ -238,16 +238,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SendMessageRequest"
+              $ref: '#/components/schemas/SendMessageRequest'
       responses:
-        "202":
+        '202':
           description: Message sending initiated
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Message"
-        "400":
-          $ref: "#/components/responses/BadRequest"
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
   /messages/{messageId}:
     get:
@@ -256,16 +256,16 @@ paths:
       security:
         - firebaseAuth: []
       parameters:
-        - $ref: "#/components/parameters/MessageId"
+        - $ref: '#/components/parameters/MessageId'
       responses:
-        "200":
+        '200':
           description: Message details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MessageWithDeliveries"
-        "404":
-          $ref: "#/components/responses/NotFound"
+                $ref: '#/components/schemas/MessageWithDeliveries'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /messages/{messageId}/deliveries:
     get:
@@ -274,9 +274,9 @@ paths:
       security:
         - firebaseAuth: []
       parameters:
-        - $ref: "#/components/parameters/MessageId"
+        - $ref: '#/components/parameters/MessageId'
       responses:
-        "200":
+        '200':
           description: Delivery details
           content:
             application/json:
@@ -286,9 +286,9 @@ paths:
                   deliveries:
                     type: array
                     items:
-                      $ref: "#/components/schemas/MessageDelivery"
+                      $ref: '#/components/schemas/MessageDelivery'
                   summary:
-                    $ref: "#/components/schemas/DeliverySummary"
+                    $ref: '#/components/schemas/DeliverySummary'
 
 components:
   securitySchemes:
@@ -342,8 +342,7 @@ components:
 
     ChannelList:
       type: object
-      required:
-        [id, name, channelIds, channelCount, isActive, createdAt, updatedAt]
+      required: [id, name, channelIds, channelCount, isActive, createdAt, updatedAt]
       properties:
         id:
           type: string
@@ -373,13 +372,13 @@ components:
 
     ChannelListWithChannels:
       allOf:
-        - $ref: "#/components/schemas/ChannelList"
+        - $ref: '#/components/schemas/ChannelList'
         - type: object
           properties:
             channels:
               type: array
               items:
-                $ref: "#/components/schemas/Channel"
+                $ref: '#/components/schemas/Channel'
 
     CreateChannelListRequest:
       type: object
@@ -412,8 +411,7 @@ components:
 
     SlackUser:
       type: object
-      required:
-        [id, name, displayName, avatar, isBot, isActive, hasPostingPermission]
+      required: [id, name, displayName, avatar, isBot, isActive, hasPostingPermission]
       properties:
         id:
           type: string
@@ -435,16 +433,7 @@ components:
     Message:
       type: object
       required:
-        [
-          id,
-          content,
-          status,
-          totalChannels,
-          successCount,
-          failureCount,
-          skipCount,
-          createdAt,
-        ]
+        [id, content, status, totalChannels, successCount, failureCount, skipCount, createdAt]
       properties:
         id:
           type: string
@@ -474,17 +463,17 @@ components:
 
     MessageWithDeliveries:
       allOf:
-        - $ref: "#/components/schemas/Message"
+        - $ref: '#/components/schemas/Message'
         - type: object
           properties:
             deliveries:
               type: array
               items:
-                $ref: "#/components/schemas/MessageDelivery"
+                $ref: '#/components/schemas/MessageDelivery'
             channelList:
-              $ref: "#/components/schemas/ChannelList"
+              $ref: '#/components/schemas/ChannelList'
             selectedSender:
-              $ref: "#/components/schemas/SlackUser"
+              $ref: '#/components/schemas/SlackUser'
 
     SendMessageRequest:
       type: object
@@ -558,22 +547,22 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'
     Unauthorized:
       description: Unauthorized
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'
     NotFound:
       description: Not found
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'
     ServerError:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Error"
+            $ref: '#/components/schemas/Error'

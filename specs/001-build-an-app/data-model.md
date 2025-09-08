@@ -134,10 +134,10 @@ interface Message {
 }
 
 enum MessageStatus {
-  DRAFT = "draft",
-  SENDING = "sending",
-  COMPLETED = "completed",
-  FAILED = "failed",
+  DRAFT = 'draft',
+  SENDING = 'sending',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
 }
 ```
 
@@ -169,10 +169,10 @@ interface MessageDelivery {
 }
 
 enum DeliveryStatus {
-  PENDING = "pending",
-  SUCCESS = "success",
-  FAILED = "failed",
-  SKIPPED = "skipped",
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+  SKIPPED = 'skipped',
 }
 ```
 

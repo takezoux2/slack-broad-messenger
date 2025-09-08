@@ -1,17 +1,40 @@
-# slack-broad-messenger
+# Slack Broad Messenger
 
-TypeScript + Next.js プロジェクト（Yarn 使用）
+A web application to send messages to multiple Slack channels at once.
 
-## セットアップ
+**Tech Stack**: TypeScript + Next.js 15+ + React 18+ + Firebase + Slack SDK + Vitest + Playwright
 
+## Setup
+
+```bash
+npm install
 ```
-yarn install
+
+## Development
+
+### Start Development Server
+
+```bash
+npm run dev
 ```
 
-## 開発サーバー起動
+### Start Firebase Emulator
 
+```bash
+npm run dev:firebase
 ```
-yarn dev
+
+### Run Tests
+
+```bash
+# All tests
+npm test
+
+# Specific test types
+npm run test:unit
+npm run test:integration
+npm run test:contract
+npm run test:e2e
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
