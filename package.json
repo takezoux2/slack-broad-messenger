@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix && biome check --write",
     "format": "prettier --write . && biome format --write",
     "format:check": "prettier --check . && biome format",
-    "test": "vitest",
+    "test": "vitest run",
     "test:once": "vitest run",
     "test:unit": "vitest run tests/unit",
     "test:unit:watch": "vitest tests/unit",

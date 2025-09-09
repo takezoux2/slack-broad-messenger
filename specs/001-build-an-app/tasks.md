@@ -75,8 +75,8 @@
 
 ### Integration Tests (User Stories)
 
-- [ ] T020 [P] Integration test: Create and edit channel lists in tests/integration/channel-list-management.test.ts
-- [ ] T021 [P] Integration test: Send message to multiple channels in tests/integration/message-sending.test.ts
+- [x] T020 [P] Integration test: Create and edit channel lists in tests/integration/channel-list-management.test.ts
+- [x] T021 [P] Integration test: Send message to multiple channels in tests/integration/message-sending.test.ts
 - [ ] T022 [P] Integration test: Handle validation errors in tests/integration/validation-errors.test.ts
 - [ ] T023 [P] Integration test: Handle partial failures in tests/integration/partial-failures.test.ts
 - [ ] T024 [P] Integration test: Slack OAuth authentication flow in tests/integration/oauth-flow.test.ts
