@@ -1,8 +1,14 @@
 /**
  * Unit tests for User type and validation
  */
-import { describe, it, expect } from 'vitest';
-import { User, validateUser, createUser, isUser, UserValidationError } from '../../../src/lib/types/user';
+import { describe, expect, it } from 'vitest';
+import {
+  createUser,
+  isUser,
+  type User,
+  UserValidationError,
+  validateUser,
+} from '../../src/lib/types/user';
 
 describe('User Type and Validation', () => {
   const validUserData: User = {
@@ -47,9 +53,14 @@ describe('User Type and Validation', () => {
     });
 
     it('should throw error for displayName too long', () => {
-      const invalidUser = { ...validUserData, displayName: Array(102).join('a') };
+      const invalidUser = {
+        ...validUserData,
+        displayName: Array(102).join('a'),
+      };
       expect(() => validateUser(invalidUser)).toThrow(UserValidationError);
-      expect(() => validateUser(invalidUser)).toThrow('displayName is required and must be 1-100 characters');
+      expect(() => validateUser(invalidUser)).toThrow(
+        'displayName is required and must be 1-100 characters'
+      );
     });
 
     it('should throw error for missing slackTeamId', () => {
@@ -84,7 +95,9 @@ describe('User Type and Validation', () => {
     it('should throw error for empty avatar string', () => {
       const invalidUser = { ...validUserData, avatar: '' };
       expect(() => validateUser(invalidUser)).toThrow(UserValidationError);
-      expect(() => validateUser(invalidUser)).toThrow('avatar must be a non-empty string if provided');
+      expect(() => validateUser(invalidUser)).toThrow(
+        'avatar must be a non-empty string if provided'
+      );
     });
   });
 
