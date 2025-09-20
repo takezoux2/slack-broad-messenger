@@ -2,37 +2,144 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users can read and write their own user document
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidChannelListData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['name', 'channelIds', 'channelCount', 'isActive', 'createdAt', 'updatedAt']) &&
+             data.name is string &&
+             data.name.size() > 0 &&
+             data.name.size() <= 100 &&
+             data.channelIds is list &&
+             data.channelIds.size() <= 100 &&
+             data.channelCount is int &&
+             data.channelCount >= 0 &&
+             data.channelCount <= 100 &&
+             data.isActive is bool &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+
+    function isValidMessageData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['content', 'status', 'totalChannels', 'successCount', 'failureCount', 'skipCount', 'createdAt']) &&
+             data.content is string &&
+             data.content.size() > 0 &&
+             data.content.size() <= 4000 &&
+             data.status in ['draft', 'sending', 'completed', 'failed'] &&
+             data.totalChannels is int &&
+             data.totalChannels >= 0 &&
+             data.totalChannels <= 100 &&
+             data.successCount is int &&
+             data.successCount >= 0 &&
+             data.failureCount is int &&
+             data.failureCount >= 0 &&
+             data.skipCount is int &&
+             data.skipCount >= 0 &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidDeliveryData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['channelId', 'channelName', 'status', 'retryCount']) &&
+             data.channelId is string &&
+             data.channelId.size() > 0 &&
+             data.channelName is string &&
+             data.channelName.size() > 0 &&
+             data.status in ['pending', 'success', 'failed', 'skipped'] &&
+             data.retryCount is int &&
+             data.retryCount >= 0;
+    }
+
+    // Users collection
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
+      
+      allow create: if isAuthenticated() &&
+                       request.auth.uid == userId &&
+                       request.resource.data.keys().hasAll(['uid', 'email', 'slackUserId', 'displayName', 'slackTeamId', 'createdAt', 'lastLoginAt', 'isActive']) &&
+                       request.resource.data.uid == userId &&
+                       request.resource.data.email is string &&
+                       request.resource.data.slackUserId is string &&
+                       request.resource.data.displayName is string &&
+                       request.resource.data.slackTeamId is string &&
+                       request.resource.data.createdAt is timestamp &&
+                       request.resource.data.lastLoginAt is timestamp &&
+                       request.resource.data.isActive is bool;
     }
     
     // Channel lists - users can only access their own lists
     match /channelLists/{listId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.ownerId;
+      allow read: if isAuthenticated() && 
+                     resource.data.ownerId == request.auth.uid;
+      
+      allow create: if isAuthenticated() &&
+                       request.resource.data.ownerId == request.auth.uid &&
+                       isValidChannelListData();
+      
+      allow update: if isAuthenticated() &&
+                       resource.data.ownerId == request.auth.uid &&
+                       request.resource.data.ownerId == request.auth.uid &&
+                       isValidChannelListData();
+      
+      allow delete: if isAuthenticated() &&
+                       resource.data.ownerId == request.auth.uid;
     }
     
     // Messages - users can only access their own messages
     match /messages/{messageId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.senderId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.senderId;
+      allow read: if isAuthenticated() && 
+                     resource.data.senderId == request.auth.uid;
+      
+      allow create: if isAuthenticated() &&
+                       request.resource.data.senderId == request.auth.uid &&
+                       isValidMessageData();
+      
+      allow update: if isAuthenticated() &&
+                       resource.data.senderId == request.auth.uid &&
+                       request.resource.data.senderId == request.auth.uid;
+      
+      allow delete: if isAuthenticated() &&
+                       resource.data.senderId == request.auth.uid;
       
       // Message deliveries subcollection
       match /deliveries/{deliveryId} {
-        allow read: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/messages/$(messageId)).data.senderId;
-        allow write: if request.auth != null && request.auth.uid == get(/databases/$(database)/documents/messages/$(messageId)).data.senderId;
+        allow read: if isAuthenticated() && 
+                       get(/databases/$(database)/documents/messages/$(messageId)).data.senderId == request.auth.uid;
+        
+        allow create: if isAuthenticated() &&
+                         get(/databases/$(database)/documents/messages/$(messageId)).data.senderId == request.auth.uid &&
+                         isValidDeliveryData();
+        
+        allow update: if isAuthenticated() &&
+                         get(/databases/$(database)/documents/messages/$(messageId)).data.senderId == request.auth.uid;
+        
+        allow delete: if false; // Deliveries should not be deleted
       }
     }
     
     // Channels - read-only for all authenticated users in the same workspace
     match /channels/{channelId} {
-      allow read: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if false; // Only system can write channel data
     }
     
     // Slack users - read-only for all authenticated users in the same workspace
     match /slackUsers/{slackUserId} {
-      allow read: if request.auth != null;
+      allow read: if isAuthenticated();
+      allow write: if false; // Only system can write slack user data
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

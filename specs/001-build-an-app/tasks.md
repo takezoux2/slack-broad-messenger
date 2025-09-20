@@ -130,16 +130,16 @@
 
 ## Phase 3.6: Integration & Error Handling
 
-- [ ] T058 Error handling and logging service in src/lib/error-handler.ts
-- [ ] T059 Real-time progress updates using Firebase listeners in src/lib/progress-tracker.ts
-- [ ] T060 Rate limiting for Slack API calls in src/lib/rate-limiter.ts
-- [ ] T061 Firebase Security Rules for Firestore collections in firestore.rules
+- [x] T058 Error handling and logging service in src/lib/error-handler.ts
+- [x] T059 Real-time progress updates using Firebase listeners in src/lib/progress-tracker.ts
+- [x] T060 Rate limiting for Slack API calls in src/lib/rate-limiter.ts
+- [x] T061 Firebase Security Rules for Firestore collections in firestore.rules
 
 ## Phase 3.7: End-to-End Tests
 
-- [ ] T062 [P] E2E test: Complete authentication flow in tests/e2e/auth-flow.spec.ts
-- [ ] T063 [P] E2E test: Create channel list and send message in tests/e2e/message-workflow.spec.ts
-- [ ] T064 [P] E2E test: Error handling and edge cases in tests/e2e/error-scenarios.spec.ts
+- [x] T062 [P] E2E test: Complete authentication flow in tests/e2e/auth-flow.spec.ts
+- [x] T063 [P] E2E test: Create channel list and send message in tests/e2e/message-workflow.spec.ts
+- [x] T064 [P] E2E test: Error handling and edge cases in tests/e2e/error-scenarios.spec.ts
 
 ## Phase 3.8: Polish & Performance
 
