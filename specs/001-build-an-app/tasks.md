@@ -119,14 +119,14 @@
 
 ## Phase 3.5: Frontend Components (Parallel - different files)
 
-- [ ] T050 [P] Root layout with Firebase providers in src/app/layout.tsx
-- [ ] T051 [P] Dashboard page in src/app/page.tsx
-- [ ] T052 [P] Authentication pages in src/app/auth/page.tsx
-- [ ] T053 [P] ChannelList management component in src/components/ChannelList.tsx
-- [ ] T054 [P] MessageComposer form component in src/components/MessageComposer.tsx
-- [ ] T055 [P] DeliveryReport display component in src/components/DeliveryReport.tsx
-- [ ] T056 [P] Channel picker component in src/components/ChannelPicker.tsx
-- [ ] T057 [P] User selector component in src/components/UserSelector.tsx
+- [x] T050 [P] Root layout with Firebase providers in src/app/layout.tsx
+- [x] T051 [P] Dashboard page in src/app/page.tsx
+- [x] T052 [P] Authentication pages in src/app/auth/page.tsx
+- [x] T053 [P] ChannelList management component in src/components/ChannelList.tsx
+- [x] T054 [P] MessageComposer form component in src/components/MessageComposer.tsx
+- [x] T055 [P] DeliveryReport display component in src/components/DeliveryReport.tsx
+- [x] T056 [P] Channel picker component in src/components/ChannelPicker.tsx
+- [x] T057 [P] User selector component in src/components/UserSelector.tsx
 
 ## Phase 3.6: Integration & Error Handling
 
