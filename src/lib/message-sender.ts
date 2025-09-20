@@ -113,7 +113,7 @@ export class MessageSender {
   private firestore = getFirebaseFirestore();
   private authManager = getAuthManager();
   private channelManager = getChannelManager();
-  
+
   // Default options
   private defaultOptions: Required<MessageSendingOptions> = {
     retryCount: 3,
@@ -127,7 +127,7 @@ export class MessageSender {
    */
   private ensureAuthenticated(): { uid: string; teamId: string; accessToken: string } {
     const authState = this.authManager.getCurrentAuthState();
-    
+
     if (!authState.isAuthenticated || !authState.user) {
       throw new MessageSenderError(
         MessageSenderErrorType.NOT_AUTHENTICATED,
@@ -178,12 +178,10 @@ export class MessageSender {
       }
 
       // Get and validate channel list
-      const channelListWithChannels = await this.channelManager.getChannelListWithChannels(channelListId);
+      const channelListWithChannels =
+        await this.channelManager.getChannelListWithChannels(channelListId);
       if (!channelListWithChannels) {
-        throw new MessageSenderError(
-          MessageSenderErrorType.NOT_FOUND,
-          'Channel list not found'
-        );
+        throw new MessageSenderError(MessageSenderErrorType.NOT_FOUND, 'Channel list not found');
       }
 
       if (channelListWithChannels.channels.length === 0) {
@@ -223,10 +221,14 @@ export class MessageSender {
       await this.channelManager.markChannelListAsUsed(channelListId);
 
       // Start sending process asynchronously
-      this.startSendingProcess(messageWithId, channelListWithChannels.channels, accessToken, finalOptions)
-        .catch(error => {
-          console.error('Message sending process failed:', error);
-        });
+      this.startSendingProcess(
+        messageWithId,
+        channelListWithChannels.channels,
+        accessToken,
+        finalOptions
+      ).catch(error => {
+        console.error('Message sending process failed:', error);
+      });
 
       return messageWithId;
     } catch (error) {
@@ -248,7 +250,7 @@ export class MessageSender {
   private async createDeliveryRecords(message: Message, channels: Channel[]): Promise<void> {
     try {
       const batch = writeBatch(this.firestore);
-      
+
       for (const channel of channels) {
         const delivery = createMessageDelivery({
           messageId: message.id,
@@ -302,14 +304,14 @@ export class MessageSender {
 
       // Get delivery records
       const deliveries = await this.getDeliveriesForMessage(message.id);
-      
+
       // Process channels in batches
       for (let i = 0; i < deliveries.length; i += options.batchSize) {
         const batch = deliveries.slice(i, i + options.batchSize);
-        
+
         // Process batch in parallel
         await Promise.all(
-          batch.map(async (delivery) => {
+          batch.map(async delivery => {
             const channel = channels.find(c => c.id === delivery.channelId);
             if (!channel) {
               await this.markDeliveryAsSkipped(delivery, 'Channel not found');
@@ -339,7 +341,9 @@ export class MessageSender {
             }
 
             progress.processedChannels++;
-            progress.percentComplete = Math.round((progress.processedChannels / progress.totalChannels) * 100);
+            progress.percentComplete = Math.round(
+              (progress.processedChannels / progress.totalChannels) * 100
+            );
             options.progressCallback(progress);
           })
         );
@@ -361,14 +365,16 @@ export class MessageSender {
         progress.skipCount
       );
       await this.updateMessage(completedMessage);
-
     } catch (error) {
       console.error('Message sending process failed:', error);
-      
+
       // Mark message as failed
-      const failedMessage = failMessage(message, error instanceof Error ? error.message : 'Unknown error');
+      const failedMessage = failMessage(
+        message,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
       await this.updateMessage(failedMessage);
-      
+
       throw error;
     }
   }
@@ -384,7 +390,7 @@ export class MessageSender {
     retryDelay: number
   ): Promise<DeliveryAttemptResult> {
     let currentDelivery = delivery;
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         // Start delivery attempt
@@ -392,11 +398,7 @@ export class MessageSender {
         await this.updateDelivery(currentDelivery);
 
         // Attempt to post message to Slack
-        const result = await postSlackMessage(
-          currentDelivery.channelId,
-          content,
-          accessToken
-        );
+        const result = await postSlackMessage(currentDelivery.channelId, content, accessToken);
 
         // Mark as successful
         const successDelivery = markDeliverySuccess(currentDelivery, result.ts);
@@ -407,16 +409,18 @@ export class MessageSender {
           slackMessageId: result.ts,
           shouldRetry: false,
         };
-
       } catch (error) {
-        console.error(`Delivery attempt ${attempt + 1} failed for channel ${currentDelivery.channelName}:`, error);
-        
+        console.error(
+          `Delivery attempt ${attempt + 1} failed for channel ${currentDelivery.channelName}:`,
+          error
+        );
+
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         const errorCode = this.extractErrorCode(error);
-        
+
         // Check if this is a retryable error
         const shouldRetry = this.shouldRetryError(error) && attempt < maxRetries;
-        
+
         if (shouldRetry) {
           // Increment retry count and wait before next attempt
           currentDelivery = incrementRetryCount(currentDelivery);
@@ -426,7 +430,7 @@ export class MessageSender {
           // Mark as failed
           const failedDelivery = markDeliveryFailed(currentDelivery, errorCode, errorMessage);
           await this.updateDelivery(failedDelivery);
-          
+
           return {
             success: false,
             errorCode,
@@ -458,26 +462,30 @@ export class MessageSender {
   private shouldRetryError(error: unknown): boolean {
     if (error instanceof Error) {
       const message = error.message.toLowerCase();
-      
+
       // Retry on rate limits, timeouts, and temporary network issues
-      if (message.includes('rate_limited') ||
-          message.includes('timeout') ||
-          message.includes('network') ||
-          message.includes('temporary') ||
-          message.includes('server_error')) {
+      if (
+        message.includes('rate_limited') ||
+        message.includes('timeout') ||
+        message.includes('network') ||
+        message.includes('temporary') ||
+        message.includes('server_error')
+      ) {
         return true;
       }
-      
+
       // Don't retry on permanent errors
-      if (message.includes('channel_not_found') ||
-          message.includes('not_in_channel') ||
-          message.includes('is_archived') ||
-          message.includes('account_inactive') ||
-          message.includes('invalid_auth')) {
+      if (
+        message.includes('channel_not_found') ||
+        message.includes('not_in_channel') ||
+        message.includes('is_archived') ||
+        message.includes('account_inactive') ||
+        message.includes('invalid_auth')
+      ) {
         return false;
       }
     }
-    
+
     // Default to retry for unknown errors
     return true;
   }
@@ -493,7 +501,7 @@ export class MessageSender {
         return match[1];
       }
     }
-    
+
     return 'unknown_error';
   }
 
@@ -519,7 +527,13 @@ export class MessageSender {
    */
   private async updateDelivery(delivery: MessageDelivery): Promise<void> {
     try {
-      const deliveryRef = doc(this.firestore, 'messages', delivery.messageId, 'deliveries', delivery.id);
+      const deliveryRef = doc(
+        this.firestore,
+        'messages',
+        delivery.messageId,
+        'deliveries',
+        delivery.id
+      );
       await updateDoc(deliveryRef, { ...delivery });
     } catch (error) {
       console.error('Failed to update delivery:', error);
@@ -540,15 +554,15 @@ export class MessageSender {
         collection(this.firestore, 'messages', messageId, 'deliveries'),
         orderBy('channelName')
       );
-      
+
       const deliveriesSnap = await getDocs(deliveriesQuery);
       const deliveries: MessageDelivery[] = [];
-      
+
       deliveriesSnap.forEach(doc => {
         const delivery = { id: doc.id, ...doc.data() } as MessageDelivery;
         deliveries.push(delivery);
       });
-      
+
       return deliveries;
     } catch (error) {
       console.error('Failed to get message deliveries:', error);
@@ -575,7 +589,7 @@ export class MessageSender {
       }
 
       const message = { id: messageId, ...messageSnap.data() } as Message;
-      
+
       // Verify ownership
       if (message.senderId !== uid) {
         throw new MessageSenderError(
@@ -623,7 +637,7 @@ export class MessageSender {
 
       messagesSnap.forEach(doc => {
         const message = { id: doc.id, ...doc.data() } as Message;
-        
+
         const validation = validateMessage(message);
         if (validation.isValid) {
           messages.push(message);
@@ -649,10 +663,7 @@ export class MessageSender {
     // Verify message ownership
     const message = await this.getMessage(messageId);
     if (!message) {
-      throw new MessageSenderError(
-        MessageSenderErrorType.NOT_FOUND,
-        'Message not found'
-      );
+      throw new MessageSenderError(MessageSenderErrorType.NOT_FOUND, 'Message not found');
     }
 
     return this.getDeliveriesForMessage(messageId);
@@ -666,8 +677,8 @@ export class MessageSender {
     callback: (progress: MessageSendingProgress) => void
   ): Unsubscribe {
     const deliveriesRef = collection(this.firestore, 'messages', messageId, 'deliveries');
-    
-    return onSnapshot(deliveriesRef, (snapshot) => {
+
+    return onSnapshot(deliveriesRef, snapshot => {
       let totalChannels = 0;
       let processedChannels = 0;
       let successCount = 0;
@@ -678,10 +689,10 @@ export class MessageSender {
       snapshot.forEach(doc => {
         const delivery = doc.data() as MessageDelivery;
         totalChannels++;
-        
+
         if (delivery.status !== DeliveryStatus.PENDING) {
           processedChannels++;
-          
+
           switch (delivery.status) {
             case DeliveryStatus.SUCCESS:
               successCount++;
@@ -699,7 +710,8 @@ export class MessageSender {
         }
       });
 
-      const percentComplete = totalChannels > 0 ? Math.round((processedChannels / totalChannels) * 100) : 0;
+      const percentComplete =
+        totalChannels > 0 ? Math.round((processedChannels / totalChannels) * 100) : 0;
       const isComplete = processedChannels === totalChannels;
 
       const progress: MessageSendingProgress = {

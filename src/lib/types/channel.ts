@@ -55,78 +55,92 @@ export function validateChannel(channel: any): ChannelValidationResult {
   if (!channel.id || typeof channel.id !== 'string' || channel.id.trim() === '') {
     errors.push({
       field: 'id',
-      message: 'Channel ID is required and must be a non-empty string'
+      message: 'Channel ID is required and must be a non-empty string',
     });
   }
 
   if (!channel.teamId || typeof channel.teamId !== 'string' || channel.teamId.trim() === '') {
     errors.push({
       field: 'teamId',
-      message: 'Team ID is required and must be a non-empty string'
+      message: 'Team ID is required and must be a non-empty string',
     });
   }
 
   if (!channel.name || typeof channel.name !== 'string' || channel.name.trim() === '') {
     errors.push({
       field: 'name',
-      message: 'Channel name is required and must be a non-empty string'
+      message: 'Channel name is required and must be a non-empty string',
     });
   }
 
-  if (!channel.displayName || typeof channel.displayName !== 'string' || channel.displayName.trim() === '') {
+  if (
+    !channel.displayName ||
+    typeof channel.displayName !== 'string' ||
+    channel.displayName.trim() === ''
+  ) {
     errors.push({
       field: 'displayName',
-      message: 'Display name is required and must be a non-empty string'
+      message: 'Display name is required and must be a non-empty string',
     });
   }
 
   if (typeof channel.isPrivate !== 'boolean') {
     errors.push({
       field: 'isPrivate',
-      message: 'isPrivate must be a boolean'
+      message: 'isPrivate must be a boolean',
     });
   }
 
   if (typeof channel.isArchived !== 'boolean') {
     errors.push({
       field: 'isArchived',
-      message: 'isArchived must be a boolean'
+      message: 'isArchived must be a boolean',
     });
   }
 
-  if (typeof channel.memberCount !== 'number' || channel.memberCount < 0 || !Number.isInteger(channel.memberCount)) {
+  if (
+    typeof channel.memberCount !== 'number' ||
+    channel.memberCount < 0 ||
+    !Number.isInteger(channel.memberCount)
+  ) {
     errors.push({
       field: 'memberCount',
-      message: 'Member count must be a non-negative integer'
+      message: 'Member count must be a non-negative integer',
     });
   }
 
   if (typeof channel.isDeleted !== 'boolean') {
     errors.push({
       field: 'isDeleted',
-      message: 'isDeleted must be a boolean'
+      message: 'isDeleted must be a boolean',
     });
   }
 
   if (!channel.lastSyncAt || !(channel.lastSyncAt instanceof Timestamp)) {
     errors.push({
       field: 'lastSyncAt',
-      message: 'lastSyncAt must be a Firebase Timestamp'
+      message: 'lastSyncAt must be a Firebase Timestamp',
     });
   }
 
   // Optional field validations
-  if (channel.purpose !== undefined && (typeof channel.purpose !== 'string' || channel.purpose.length > 250)) {
+  if (
+    channel.purpose !== undefined &&
+    (typeof channel.purpose !== 'string' || channel.purpose.length > 250)
+  ) {
     errors.push({
       field: 'purpose',
-      message: 'Purpose must be a string with maximum 250 characters'
+      message: 'Purpose must be a string with maximum 250 characters',
     });
   }
 
-  if (channel.topic !== undefined && (typeof channel.topic !== 'string' || channel.topic.length > 250)) {
+  if (
+    channel.topic !== undefined &&
+    (typeof channel.topic !== 'string' || channel.topic.length > 250)
+  ) {
     errors.push({
       field: 'topic',
-      message: 'Topic must be a string with maximum 250 characters'
+      message: 'Topic must be a string with maximum 250 characters',
     });
   }
 
@@ -134,20 +148,25 @@ export function validateChannel(channel: any): ChannelValidationResult {
   if (channel.id && typeof channel.id === 'string' && !channel.id.match(/^C[A-Z0-9]+$/)) {
     errors.push({
       field: 'id',
-      message: 'Channel ID must follow Slack channel ID format (C followed by alphanumeric characters)'
+      message:
+        'Channel ID must follow Slack channel ID format (C followed by alphanumeric characters)',
     });
   }
 
-  if (channel.teamId && typeof channel.teamId === 'string' && !channel.teamId.match(/^T[A-Z0-9]+$/)) {
+  if (
+    channel.teamId &&
+    typeof channel.teamId === 'string' &&
+    !channel.teamId.match(/^T[A-Z0-9]+$/)
+  ) {
     errors.push({
       field: 'teamId',
-      message: 'Team ID must follow Slack team ID format (T followed by alphanumeric characters)'
+      message: 'Team ID must follow Slack team ID format (T followed by alphanumeric characters)',
     });
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -156,7 +175,7 @@ export function validateChannel(channel: any): ChannelValidationResult {
  */
 export function createChannel(data: Partial<Channel>): Channel {
   const now = Timestamp.now();
-  
+
   return {
     id: data.id || '',
     teamId: data.teamId || '',
@@ -168,7 +187,7 @@ export function createChannel(data: Partial<Channel>): Channel {
     isArchived: data.isArchived ?? false,
     memberCount: data.memberCount ?? 0,
     isDeleted: data.isDeleted ?? false,
-    lastSyncAt: data.lastSyncAt || now
+    lastSyncAt: data.lastSyncAt || now,
   };
 }
 

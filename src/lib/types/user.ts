@@ -66,9 +66,11 @@ function isValidEmail(email: string): boolean {
  * Must be non-empty and maximum 100 characters
  */
 function isValidDisplayName(displayName: string): boolean {
-  return typeof displayName === 'string' && 
-         displayName.trim().length > 0 && 
-         displayName.trim().length <= 100;
+  return (
+    typeof displayName === 'string' &&
+    displayName.trim().length > 0 &&
+    displayName.trim().length <= 100
+  );
 }
 
 /**
@@ -81,84 +83,101 @@ export function validateUser(user: any): UserValidationResult {
   if (!user.uid || !isValidFirebaseUID(user.uid)) {
     errors.push({
       field: 'uid',
-      message: 'uid must be a valid Firebase Auth UID'
+      message: 'uid must be a valid Firebase Auth UID',
     });
   }
 
   if (!user.email || !isValidEmail(user.email)) {
     errors.push({
       field: 'email',
-      message: 'email must be a valid email format'
+      message: 'email must be a valid email format',
     });
   }
 
-  if (!user.slackUserId || typeof user.slackUserId !== 'string' || user.slackUserId.trim().length === 0) {
+  if (
+    !user.slackUserId ||
+    typeof user.slackUserId !== 'string' ||
+    user.slackUserId.trim().length === 0
+  ) {
     errors.push({
       field: 'slackUserId',
-      message: 'slackUserId is required and must be a non-empty string'
+      message: 'slackUserId is required and must be a non-empty string',
     });
   }
 
   if (!user.displayName || !isValidDisplayName(user.displayName)) {
     errors.push({
       field: 'displayName',
-      message: 'displayName is required and must be 1-100 characters'
+      message: 'displayName is required and must be 1-100 characters',
     });
   }
 
-  if (!user.slackTeamId || typeof user.slackTeamId !== 'string' || user.slackTeamId.trim().length === 0) {
+  if (
+    !user.slackTeamId ||
+    typeof user.slackTeamId !== 'string' ||
+    user.slackTeamId.trim().length === 0
+  ) {
     errors.push({
       field: 'slackTeamId',
-      message: 'slackTeamId is required and must be a non-empty string'
+      message: 'slackTeamId is required and must be a non-empty string',
     });
   }
 
   if (!user.createdAt || !(user.createdAt instanceof Timestamp)) {
     errors.push({
       field: 'createdAt',
-      message: 'createdAt must be a Firebase Timestamp'
+      message: 'createdAt must be a Firebase Timestamp',
     });
   }
 
   if (!user.lastLoginAt || !(user.lastLoginAt instanceof Timestamp)) {
     errors.push({
       field: 'lastLoginAt',
-      message: 'lastLoginAt must be a Firebase Timestamp'
+      message: 'lastLoginAt must be a Firebase Timestamp',
     });
   }
 
   if (typeof user.isActive !== 'boolean') {
     errors.push({
       field: 'isActive',
-      message: 'isActive must be a boolean value'
+      message: 'isActive must be a boolean value',
     });
   }
 
   // Optional field validations
-  if (user.avatar !== undefined && (typeof user.avatar !== 'string' || user.avatar.trim().length === 0)) {
+  if (
+    user.avatar !== undefined &&
+    (typeof user.avatar !== 'string' || user.avatar.trim().length === 0)
+  ) {
     errors.push({
       field: 'avatar',
-      message: 'avatar must be a non-empty string if provided'
+      message: 'avatar must be a non-empty string if provided',
     });
   }
 
-  if (user.slackAccessToken !== undefined && (typeof user.slackAccessToken !== 'string' || user.slackAccessToken.trim().length === 0)) {
+  if (
+    user.slackAccessToken !== undefined &&
+    (typeof user.slackAccessToken !== 'string' || user.slackAccessToken.trim().length === 0)
+  ) {
     errors.push({
       field: 'slackAccessToken',
-      message: 'slackAccessToken must be a non-empty string if provided'
+      message: 'slackAccessToken must be a non-empty string if provided',
     });
   }
 
-  if (user.slackScope !== undefined && (typeof user.slackScope !== 'string' || user.slackScope.trim().length === 0)) {
+  if (
+    user.slackScope !== undefined &&
+    (typeof user.slackScope !== 'string' || user.slackScope.trim().length === 0)
+  ) {
     errors.push({
       field: 'slackScope',
-      message: 'slackScope must be a non-empty string if provided'
+      message: 'slackScope must be a non-empty string if provided',
     });
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -167,7 +186,7 @@ export function validateUser(user: any): UserValidationResult {
  */
 export function createUser(userData: Partial<User>): User {
   const now = Timestamp.now();
-  
+
   return {
     uid: userData.uid || '',
     email: userData.email || '',

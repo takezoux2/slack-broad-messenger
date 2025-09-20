@@ -51,7 +51,9 @@ function initializeFirebaseAdmin() {
     };
 
     if (!serviceAccount.projectId || !serviceAccount.clientEmail || !serviceAccount.privateKey) {
-      throw new Error('Missing Firebase Admin SDK configuration. Please check environment variables.');
+      throw new Error(
+        'Missing Firebase Admin SDK configuration. Please check environment variables.'
+      );
     }
 
     initializeApp({
@@ -81,7 +83,7 @@ async function verifyIdToken(idToken: string) {
     initializeFirebaseAdmin();
     const auth = getAuth();
     const decodedToken = await auth.verifyIdToken(idToken);
-    
+
     return {
       uid: decodedToken.uid,
       email: decodedToken.email || '',
@@ -132,7 +134,7 @@ export function withAuth(
     try {
       // Extract token from Authorization header
       const token = extractBearerToken(req.headers.authorization);
-      
+
       if (!token) {
         return sendErrorResponse(
           res,
@@ -144,7 +146,7 @@ export function withAuth(
 
       // Verify token and get user information
       const user = await verifyIdToken(token);
-      
+
       // Add user information to request
       const authenticatedReq = req as AuthenticatedApiRequest;
       authenticatedReq.user = user;
@@ -153,7 +155,7 @@ export function withAuth(
       return handler(authenticatedReq, res);
     } catch (error) {
       console.error('Authentication middleware error:', error);
-      
+
       return sendErrorResponse(
         res,
         HTTP_STATUS.UNAUTHORIZED,
@@ -168,9 +170,7 @@ export function withAuth(
  * Middleware to validate HTTP methods
  */
 export function withMethods(allowedMethods: string[]) {
-  return function (
-    handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void
-  ) {
+  return function (handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void) {
     return async (req: NextApiRequest, res: NextApiResponse) => {
       if (!req.method || !allowedMethods.includes(req.method)) {
         return sendErrorResponse(
@@ -192,12 +192,10 @@ export function withMethods(allowedMethods: string[]) {
 export function withValidation<T>(
   validator: (body: any) => { isValid: boolean; errors?: string[] }
 ) {
-  return function (
-    handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void
-  ) {
+  return function (handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void) {
     return async (req: NextApiRequest, res: NextApiResponse) => {
       const validation = validator(req.body);
-      
+
       if (!validation.isValid) {
         return sendErrorResponse(
           res,
@@ -246,18 +244,16 @@ export function withErrorHandling(
       return await handler(req, res);
     } catch (error) {
       console.error('API handler error:', error);
-      
-      // Don't expose internal errors in production
-      const message = process.env.NODE_ENV === 'development' 
-        ? (error instanceof Error ? error.message : 'Unknown error')
-        : 'Internal server error';
 
-      return sendErrorResponse(
-        res,
-        HTTP_STATUS.INTERNAL_SERVER_ERROR,
-        'internal_error',
-        message
-      );
+      // Don't expose internal errors in production
+      const message =
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : 'Internal server error';
+
+      return sendErrorResponse(res, HTTP_STATUS.INTERNAL_SERVER_ERROR, 'internal_error', message);
     }
   };
 }
@@ -277,11 +273,7 @@ export function compose(...middlewares: Array<(handler: any) => any>) {
 export function withApiDefaults(
   handler: (req: AuthenticatedApiRequest, res: NextApiResponse) => Promise<void> | void
 ) {
-  return compose(
-    withErrorHandling,
-    withCors,
-    withAuth
-  )(handler);
+  return compose(withErrorHandling, withCors, withAuth)(handler);
 }
 
 /**
@@ -290,28 +282,21 @@ export function withApiDefaults(
 export function withPublicApiDefaults(
   handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void
 ) {
-  return compose(
-    withErrorHandling,
-    withCors
-  )(handler);
+  return compose(withErrorHandling, withCors)(handler);
 }
 
 /**
  * Validates that required environment variables are set
  */
 export function validateEnvVars(): void {
-  const requiredVars = [
-    'FIREBASE_PROJECT_ID',
-    'FIREBASE_CLIENT_EMAIL',
-    'FIREBASE_PRIVATE_KEY',
-  ];
+  const requiredVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY'];
 
   const missingVars = requiredVars.filter(varName => !process.env[varName]);
-  
+
   if (missingVars.length > 0) {
     throw new Error(
       `Missing required environment variables: ${missingVars.join(', ')}\n` +
-      'Please check your .env.local file and ensure all Firebase Admin SDK variables are set.'
+        'Please check your .env.local file and ensure all Firebase Admin SDK variables are set.'
     );
   }
 }
@@ -346,15 +331,13 @@ export function withRateLimit(
 ) {
   const requests = new Map<string, { count: number; resetTime: number }>();
 
-  return function (
-    handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void
-  ) {
+  return function (handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void) {
     return async (req: NextApiRequest, res: NextApiResponse) => {
       const clientId = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
       const now = Date.now();
-      
+
       const clientData = requests.get(clientId as string);
-      
+
       if (!clientData || now > clientData.resetTime) {
         // Reset window
         requests.set(clientId as string, {

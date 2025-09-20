@@ -54,7 +54,8 @@ const defaultConfig: FirebaseConfig = {
  * Default environment configuration
  */
 const defaultEnvConfig: FirebaseEnvConfig = {
-  useEmulator: process.env.NODE_ENV === 'development' || process.env.USE_FIREBASE_EMULATOR === 'true',
+  useEmulator:
+    process.env.NODE_ENV === 'development' || process.env.USE_FIREBASE_EMULATOR === 'true',
   emulatorHost: process.env.FIREBASE_EMULATOR_HOST || 'localhost',
   emulatorPorts: {
     auth: parseInt(process.env.FIREBASE_AUTH_EMULATOR_PORT || '9099'),
@@ -82,11 +83,11 @@ function validateFirebaseConfig(config: FirebaseConfig): void {
   ];
 
   const missingFields = requiredFields.filter(field => !config[field]);
-  
+
   if (missingFields.length > 0) {
     throw new Error(
       `Missing required Firebase configuration fields: ${missingFields.join(', ')}\n` +
-      'Please check your environment variables or Firebase configuration.'
+        'Please check your environment variables or Firebase configuration.'
     );
   }
 }
@@ -106,9 +107,9 @@ function initializeFirebaseApp(config: FirebaseConfig): FirebaseApp {
 
   // Initialize Firebase app
   const app = initializeApp(config);
-  
+
   console.log(`Firebase app initialized for project: ${config.projectId}`);
-  
+
   return app;
 }
 
@@ -198,11 +199,13 @@ export function initializeFirebase(
     };
 
     console.log('Firebase services initialized successfully');
-    
+
     return firebaseServices;
   } catch (error) {
     console.error('Failed to initialize Firebase:', error);
-    throw new Error(`Firebase initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Firebase initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

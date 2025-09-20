@@ -5,14 +5,7 @@ import {
   onAuthStateChanged,
   UserCredential,
 } from 'firebase/auth';
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  Timestamp,
-  DocumentReference,
-} from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, Timestamp, DocumentReference } from 'firebase/firestore';
 import { getFirebaseAuth, getFirebaseFirestore } from './firebase';
 import { SlackTokenInfo, testSlackConnection } from './slack';
 import { User, createUser, validateUser } from './types/user';
@@ -81,7 +74,7 @@ export class AuthManager {
 
   constructor() {
     // Set up Firebase Auth state listener
-    onAuthStateChanged(this.auth, async (firebaseUser) => {
+    onAuthStateChanged(this.auth, async firebaseUser => {
       await this.handleAuthStateChange(firebaseUser);
     });
   }
@@ -102,7 +95,7 @@ export class AuthManager {
       if (firebaseUser) {
         // Load user profile from Firestore
         const userProfile = await this.getUserProfile(firebaseUser.uid);
-        
+
         this.updateAuthState({
           user: firebaseUser,
           userProfile,
@@ -144,7 +137,7 @@ export class AuthManager {
    */
   public onAuthStateChange(callback: (state: AuthState) => void): () => void {
     this.authStateListeners.push(callback);
-    
+
     // Immediately call with current state
     callback(this.currentAuthState);
 
@@ -170,7 +163,10 @@ export class AuthManager {
   public generateSlackOAuthState(redirectUrl?: string): string {
     const firebaseUser = this.auth.currentUser;
     if (!firebaseUser) {
-      throw new AuthError(AuthErrorType.USER_NOT_FOUND, 'User must be signed in to start Slack OAuth');
+      throw new AuthError(
+        AuthErrorType.USER_NOT_FOUND,
+        'User must be signed in to start Slack OAuth'
+      );
     }
 
     const state: SlackOAuthState = {
@@ -217,7 +213,10 @@ export class AuthManager {
   public async completeSlackOAuth(tokenInfo: SlackTokenInfo): Promise<User> {
     const firebaseUser = this.auth.currentUser;
     if (!firebaseUser) {
-      throw new AuthError(AuthErrorType.USER_NOT_FOUND, 'User must be signed in to complete Slack OAuth');
+      throw new AuthError(
+        AuthErrorType.USER_NOT_FOUND,
+        'User must be signed in to complete Slack OAuth'
+      );
     }
 
     try {
@@ -322,10 +321,14 @@ export class AuthManager {
       }
 
       const userRef = doc(this.firestore, 'users', user.uid);
-      await setDoc(userRef, {
-        ...user,
-        updatedAt: Timestamp.now(),
-      }, { merge: true });
+      await setDoc(
+        userRef,
+        {
+          ...user,
+          updatedAt: Timestamp.now(),
+        },
+        { merge: true }
+      );
     } catch (error) {
       console.error('Failed to save user profile:', error);
       if (error instanceof AuthError) {
@@ -411,9 +414,11 @@ export class AuthManager {
    */
   public isFullyAuthenticated(): boolean {
     const state = this.currentAuthState;
-    return state.isAuthenticated && 
-           state.userProfile !== null && 
-           Boolean(state.userProfile.slackAccessToken);
+    return (
+      state.isAuthenticated &&
+      state.userProfile !== null &&
+      Boolean(state.userProfile.slackAccessToken)
+    );
   }
 
   /**

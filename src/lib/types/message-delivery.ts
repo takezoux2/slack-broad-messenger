@@ -65,28 +65,40 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
   if (!delivery.id || typeof delivery.id !== 'string' || delivery.id.trim() === '') {
     errors.push({
       field: 'id',
-      message: 'Delivery ID is required and must be a non-empty string'
+      message: 'Delivery ID is required and must be a non-empty string',
     });
   }
 
-  if (!delivery.messageId || typeof delivery.messageId !== 'string' || delivery.messageId.trim() === '') {
+  if (
+    !delivery.messageId ||
+    typeof delivery.messageId !== 'string' ||
+    delivery.messageId.trim() === ''
+  ) {
     errors.push({
       field: 'messageId',
-      message: 'Message ID is required and must be a non-empty string'
+      message: 'Message ID is required and must be a non-empty string',
     });
   }
 
-  if (!delivery.channelId || typeof delivery.channelId !== 'string' || delivery.channelId.trim() === '') {
+  if (
+    !delivery.channelId ||
+    typeof delivery.channelId !== 'string' ||
+    delivery.channelId.trim() === ''
+  ) {
     errors.push({
       field: 'channelId',
-      message: 'Channel ID is required and must be a non-empty string'
+      message: 'Channel ID is required and must be a non-empty string',
     });
   }
 
-  if (!delivery.channelName || typeof delivery.channelName !== 'string' || delivery.channelName.trim() === '') {
+  if (
+    !delivery.channelName ||
+    typeof delivery.channelName !== 'string' ||
+    delivery.channelName.trim() === ''
+  ) {
     errors.push({
       field: 'channelName',
-      message: 'Channel name is required and must be a non-empty string'
+      message: 'Channel name is required and must be a non-empty string',
     });
   }
 
@@ -94,23 +106,32 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
   if (!delivery.status || !Object.values(DeliveryStatus).includes(delivery.status)) {
     errors.push({
       field: 'status',
-      message: 'Status must be one of: pending, success, failed, skipped'
+      message: 'Status must be one of: pending, success, failed, skipped',
     });
   }
 
   // Retry count validation
-  if (typeof delivery.retryCount !== 'number' || delivery.retryCount < 0 || !Number.isInteger(delivery.retryCount)) {
+  if (
+    typeof delivery.retryCount !== 'number' ||
+    delivery.retryCount < 0 ||
+    !Number.isInteger(delivery.retryCount)
+  ) {
     errors.push({
       field: 'retryCount',
-      message: 'Retry count must be a non-negative integer'
+      message: 'Retry count must be a non-negative integer',
     });
   }
 
   // Slack channel ID format validation
-  if (delivery.channelId && typeof delivery.channelId === 'string' && !delivery.channelId.match(/^C[A-Z0-9]+$/)) {
+  if (
+    delivery.channelId &&
+    typeof delivery.channelId === 'string' &&
+    !delivery.channelId.match(/^C[A-Z0-9]+$/)
+  ) {
     errors.push({
       field: 'channelId',
-      message: 'Channel ID must follow Slack channel ID format (C followed by alphanumeric characters)'
+      message:
+        'Channel ID must follow Slack channel ID format (C followed by alphanumeric characters)',
     });
   }
 
@@ -119,7 +140,7 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
     if (typeof delivery.slackMessageId !== 'string' || delivery.slackMessageId.trim() === '') {
       errors.push({
         field: 'slackMessageId',
-        message: 'Slack message ID must be a non-empty string'
+        message: 'Slack message ID must be a non-empty string',
       });
     }
   }
@@ -128,7 +149,7 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
     if (typeof delivery.errorCode !== 'string' || delivery.errorCode.trim() === '') {
       errors.push({
         field: 'errorCode',
-        message: 'Error code must be a non-empty string'
+        message: 'Error code must be a non-empty string',
       });
     }
   }
@@ -137,12 +158,12 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
     if (typeof delivery.errorMessage !== 'string' || delivery.errorMessage.trim() === '') {
       errors.push({
         field: 'errorMessage',
-        message: 'Error message must be a non-empty string'
+        message: 'Error message must be a non-empty string',
       });
     } else if (delivery.errorMessage.length > 1000) {
       errors.push({
         field: 'errorMessage',
-        message: 'Error message must not exceed 1000 characters'
+        message: 'Error message must not exceed 1000 characters',
       });
     }
   }
@@ -151,22 +172,26 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
   if (delivery.sentAt !== undefined && !(delivery.sentAt instanceof Timestamp)) {
     errors.push({
       field: 'sentAt',
-      message: 'sentAt must be a Firebase Timestamp'
+      message: 'sentAt must be a Firebase Timestamp',
     });
   }
 
   if (delivery.completedAt !== undefined && !(delivery.completedAt instanceof Timestamp)) {
     errors.push({
       field: 'completedAt',
-      message: 'completedAt must be a Firebase Timestamp'
+      message: 'completedAt must be a Firebase Timestamp',
     });
   }
 
   // Timestamp sequence validation
-  if (delivery.completedAt && delivery.sentAt && delivery.completedAt.toMillis() < delivery.sentAt.toMillis()) {
+  if (
+    delivery.completedAt &&
+    delivery.sentAt &&
+    delivery.completedAt.toMillis() < delivery.sentAt.toMillis()
+  ) {
     errors.push({
       field: 'completedAt',
-      message: 'completedAt must be after sentAt'
+      message: 'completedAt must be after sentAt',
     });
   }
 
@@ -175,13 +200,13 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
     if (!delivery.slackMessageId) {
       errors.push({
         field: 'slackMessageId',
-        message: 'Slack message ID is required when status is success'
+        message: 'Slack message ID is required when status is success',
       });
     }
     if (!delivery.completedAt) {
       errors.push({
         field: 'completedAt',
-        message: 'completedAt is required when status is success'
+        message: 'completedAt is required when status is success',
       });
     }
   }
@@ -190,13 +215,13 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
     if (!delivery.errorMessage) {
       errors.push({
         field: 'errorMessage',
-        message: 'Error message is required when status is failed'
+        message: 'Error message is required when status is failed',
       });
     }
     if (!delivery.completedAt) {
       errors.push({
         field: 'completedAt',
-        message: 'completedAt is required when status is failed'
+        message: 'completedAt is required when status is failed',
       });
     }
   }
@@ -205,7 +230,7 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
     if (!delivery.completedAt) {
       errors.push({
         field: 'completedAt',
-        message: 'completedAt is required when status is skipped'
+        message: 'completedAt is required when status is skipped',
       });
     }
   }
@@ -214,20 +239,23 @@ export function validateMessageDelivery(delivery: any): MessageDeliveryValidatio
   if (delivery.status === DeliveryStatus.SUCCESS && (delivery.errorCode || delivery.errorMessage)) {
     errors.push({
       field: 'status',
-      message: 'Successful deliveries should not have error codes or messages'
+      message: 'Successful deliveries should not have error codes or messages',
     });
   }
 
-  if (delivery.status === DeliveryStatus.PENDING && (delivery.slackMessageId || delivery.completedAt)) {
+  if (
+    delivery.status === DeliveryStatus.PENDING &&
+    (delivery.slackMessageId || delivery.completedAt)
+  ) {
     errors.push({
       field: 'status',
-      message: 'Pending deliveries should not have slack message ID or completion timestamp'
+      message: 'Pending deliveries should not have slack message ID or completion timestamp',
     });
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -246,7 +274,7 @@ export function createMessageDelivery(data: Partial<MessageDelivery>): MessageDe
     errorMessage: data.errorMessage,
     retryCount: data.retryCount ?? 0,
     sentAt: data.sentAt,
-    completedAt: data.completedAt
+    completedAt: data.completedAt,
   };
 }
 
@@ -261,25 +289,32 @@ export function isMessageDelivery(obj: any): obj is MessageDelivery {
 /**
  * Marks a delivery as successful
  */
-export function markDeliverySuccess(delivery: MessageDelivery, slackMessageId: string): MessageDelivery {
+export function markDeliverySuccess(
+  delivery: MessageDelivery,
+  slackMessageId: string
+): MessageDelivery {
   return {
     ...delivery,
     status: DeliveryStatus.SUCCESS,
     slackMessageId,
-    completedAt: Timestamp.now()
+    completedAt: Timestamp.now(),
   };
 }
 
 /**
  * Marks a delivery as failed
  */
-export function markDeliveryFailed(delivery: MessageDelivery, errorCode: string, errorMessage: string): MessageDelivery {
+export function markDeliveryFailed(
+  delivery: MessageDelivery,
+  errorCode: string,
+  errorMessage: string
+): MessageDelivery {
   return {
     ...delivery,
     status: DeliveryStatus.FAILED,
     errorCode,
     errorMessage,
-    completedAt: Timestamp.now()
+    completedAt: Timestamp.now(),
   };
 }
 
@@ -291,7 +326,7 @@ export function markDeliverySkipped(delivery: MessageDelivery, reason: string): 
     ...delivery,
     status: DeliveryStatus.SKIPPED,
     errorMessage: reason,
-    completedAt: Timestamp.now()
+    completedAt: Timestamp.now(),
   };
 }
 
@@ -301,7 +336,7 @@ export function markDeliverySkipped(delivery: MessageDelivery, reason: string): 
 export function incrementRetryCount(delivery: MessageDelivery): MessageDelivery {
   return {
     ...delivery,
-    retryCount: delivery.retryCount + 1
+    retryCount: delivery.retryCount + 1,
   };
 }
 
@@ -311,7 +346,7 @@ export function incrementRetryCount(delivery: MessageDelivery): MessageDelivery 
 export function startDeliveryAttempt(delivery: MessageDelivery): MessageDelivery {
   return {
     ...delivery,
-    sentAt: Timestamp.now()
+    sentAt: Timestamp.now(),
   };
 }
 
@@ -319,9 +354,11 @@ export function startDeliveryAttempt(delivery: MessageDelivery): MessageDelivery
  * Checks if a delivery is in a final state
  */
 export function isDeliveryFinished(delivery: MessageDelivery): boolean {
-  return delivery.status === DeliveryStatus.SUCCESS || 
-         delivery.status === DeliveryStatus.FAILED || 
-         delivery.status === DeliveryStatus.SKIPPED;
+  return (
+    delivery.status === DeliveryStatus.SUCCESS ||
+    delivery.status === DeliveryStatus.FAILED ||
+    delivery.status === DeliveryStatus.SKIPPED
+  );
 }
 
 /**

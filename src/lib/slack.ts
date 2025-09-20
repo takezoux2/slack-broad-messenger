@@ -166,11 +166,11 @@ function validateSlackConfig(config: SlackConfig): void {
   ];
 
   const missingFields = requiredFields.filter(field => !config[field]);
-  
+
   if (missingFields.length > 0) {
     throw new Error(
       `Missing required Slack configuration fields: ${missingFields.join(', ')}\n` +
-      'Please check your environment variables or Slack app configuration.'
+        'Please check your environment variables or Slack app configuration.'
     );
   }
 
@@ -182,7 +182,10 @@ function validateSlackConfig(config: SlackConfig): void {
 /**
  * Creates a Slack WebClient with optional access token
  */
-export function createSlackClient(accessToken?: string, config: SlackConfig = defaultSlackConfig): WebClient {
+export function createSlackClient(
+  accessToken?: string,
+  config: SlackConfig = defaultSlackConfig
+): WebClient {
   const clientOptions: any = {
     logLevel: process.env.NODE_ENV === 'development' ? LogLevel.DEBUG : LogLevel.INFO,
     retryConfig: {
@@ -251,7 +254,9 @@ export async function exchangeSlackCode(
     };
   } catch (error) {
     console.error('Slack OAuth exchange failed:', error);
-    throw new Error(`Failed to exchange Slack OAuth code: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to exchange Slack OAuth code: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -273,7 +278,9 @@ export async function getSlackUser(userId: string, accessToken: string): Promise
     return result.user as SlackUserInfo;
   } catch (error) {
     console.error('Failed to get Slack user:', error);
-    throw new Error(`Failed to get Slack user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to get Slack user: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -286,7 +293,7 @@ export async function getSlackUsers(accessToken: string): Promise<SlackUserInfo[
 
   try {
     let cursor: string | undefined;
-    
+
     do {
       const result = await client.users.list({
         cursor,
@@ -307,7 +314,9 @@ export async function getSlackUsers(accessToken: string): Promise<SlackUserInfo[
     return users;
   } catch (error) {
     console.error('Failed to get Slack users:', error);
-    throw new Error(`Failed to get Slack users: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to get Slack users: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -321,7 +330,7 @@ export async function getSlackChannels(accessToken: string): Promise<SlackChanne
   try {
     // Get public channels
     let cursor: string | undefined;
-    
+
     do {
       const result = await client.conversations.list({
         cursor,
@@ -344,7 +353,9 @@ export async function getSlackChannels(accessToken: string): Promise<SlackChanne
     return channels;
   } catch (error) {
     console.error('Failed to get Slack channels:', error);
-    throw new Error(`Failed to get Slack channels: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to get Slack channels: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -379,7 +390,9 @@ export async function postSlackMessage(
     return result as SlackMessageResult;
   } catch (error) {
     console.error('Failed to post Slack message:', error);
-    throw new Error(`Failed to post Slack message: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to post Slack message: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -414,7 +427,9 @@ export async function getSlackTeamInfo(accessToken: string): Promise<any> {
     return result.team;
   } catch (error) {
     console.error('Failed to get Slack team info:', error);
-    throw new Error(`Failed to get Slack team info: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to get Slack team info: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -476,7 +491,10 @@ export function checkSlackConfig(): {
   }
 
   // Check for security warnings
-  if (process.env.NODE_ENV === 'production' && defaultSlackConfig.redirectUri.includes('localhost')) {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    defaultSlackConfig.redirectUri.includes('localhost')
+  ) {
     errors.push('Production environment should not use localhost redirect URI');
   }
 

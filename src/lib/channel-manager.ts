@@ -32,12 +32,7 @@ import {
   validateChannel,
   isChannelAvailableForMessaging,
 } from './types/channel';
-import {
-  getSlackChannels,
-  getSlackUsers,
-  SlackChannelInfo,
-  SlackUserInfo,
-} from './slack';
+import { getSlackChannels, getSlackUsers, SlackChannelInfo, SlackUserInfo } from './slack';
 
 /**
  * Channel manager error types
@@ -104,7 +99,7 @@ export class ChannelManager {
    */
   private ensureAuthenticated(): { uid: string; teamId: string; accessToken: string } {
     const authState = this.authManager.getCurrentAuthState();
-    
+
     if (!authState.isAuthenticated || !authState.user) {
       throw new ChannelManagerError(
         ChannelManagerErrorType.NOT_AUTHENTICATED,
@@ -135,7 +130,7 @@ export class ChannelManager {
     try {
       // Get channels from Slack API
       const slackChannels = await getSlackChannels(accessToken);
-      
+
       const result: ChannelSyncResult = {
         totalChannels: slackChannels.length,
         newChannels: 0,
@@ -151,7 +146,7 @@ export class ChannelManager {
       );
       const existingChannelsSnap = await getDocs(existingChannelsQuery);
       const existingChannels = new Map<string, Channel>();
-      
+
       existingChannelsSnap.forEach(doc => {
         const channel = doc.data() as Channel;
         existingChannels.set(channel.id, channel);
@@ -164,12 +159,14 @@ export class ChannelManager {
       for (const slackChannel of slackChannels) {
         try {
           currentChannelIds.add(slackChannel.id);
-          
+
           const channel = this.convertSlackChannelToChannel(slackChannel, teamId);
           const validation = validateChannel(channel);
-          
+
           if (!validation.isValid) {
-            result.errors.push(`Invalid channel data for ${slackChannel.name}: ${validation.errors.map(e => e.message).join(', ')}`);
+            result.errors.push(
+              `Invalid channel data for ${slackChannel.name}: ${validation.errors.map(e => e.message).join(', ')}`
+            );
             continue;
           }
 
@@ -186,7 +183,9 @@ export class ChannelManager {
             result.newChannels++;
           }
         } catch (error) {
-          result.errors.push(`Failed to process channel ${slackChannel.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          result.errors.push(
+            `Failed to process channel ${slackChannel.name}: ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
         }
       }
 
@@ -238,7 +237,10 @@ export class ChannelManager {
   /**
    * Gets all channels for the current user's team
    */
-  public async getChannels(options?: { includeArchived?: boolean; includeDeleted?: boolean }): Promise<Channel[]> {
+  public async getChannels(options?: {
+    includeArchived?: boolean;
+    includeDeleted?: boolean;
+  }): Promise<Channel[]> {
     const { teamId } = this.ensureAuthenticated();
 
     try {
@@ -253,7 +255,7 @@ export class ChannelManager {
 
       channelsSnap.forEach(doc => {
         const channel = doc.data() as Channel;
-        
+
         // Filter based on options
         if (!options?.includeArchived && channel.isArchived) {
           return;
@@ -302,12 +304,12 @@ export class ChannelManager {
       }
 
       const channel = channelSnap.data() as Channel;
-      
+
       // Verify channel belongs to user's team
       if (channel.teamId !== teamId) {
         throw new ChannelManagerError(
           ChannelManagerErrorType.PERMISSION_DENIED,
-          'Channel does not belong to user\'s team'
+          "Channel does not belong to user's team"
         );
       }
 
@@ -366,7 +368,7 @@ export class ChannelManager {
       // Save to Firestore
       const channelListRef = doc(collection(this.firestore, 'channelLists'));
       const channelListWithId = { ...channelList, id: channelListRef.id };
-      
+
       await setDoc(channelListRef, channelListWithId);
 
       return channelListWithId;
@@ -402,7 +404,7 @@ export class ChannelManager {
 
       channelListsSnap.forEach(doc => {
         const channelList = { id: doc.id, ...doc.data() } as ChannelList;
-        
+
         const validation = validateChannelList(channelList);
         if (validation.isValid) {
           channelLists.push(channelList);
@@ -431,7 +433,7 @@ export class ChannelManager {
 
     try {
       const channels = await Promise.all(
-        channelList.channelIds.map(async (channelId) => {
+        channelList.channelIds.map(async channelId => {
           const channel = await this.getChannel(channelId);
           return channel;
         })
@@ -469,7 +471,7 @@ export class ChannelManager {
       }
 
       const channelList = { id: listId, ...channelListSnap.data() } as ChannelList;
-      
+
       // Verify ownership
       if (channelList.ownerId !== uid) {
         throw new ChannelManagerError(
@@ -511,10 +513,7 @@ export class ChannelManager {
   ): Promise<ChannelList> {
     const existingList = await this.getChannelList(listId);
     if (!existingList) {
-      throw new ChannelManagerError(
-        ChannelManagerErrorType.NOT_FOUND,
-        'Channel list not found'
-      );
+      throw new ChannelManagerError(ChannelManagerErrorType.NOT_FOUND, 'Channel list not found');
     }
 
     try {
@@ -567,10 +566,7 @@ export class ChannelManager {
   public async deleteChannelList(listId: string): Promise<void> {
     const existingList = await this.getChannelList(listId);
     if (!existingList) {
-      throw new ChannelManagerError(
-        ChannelManagerErrorType.NOT_FOUND,
-        'Channel list not found'
-      );
+      throw new ChannelManagerError(ChannelManagerErrorType.NOT_FOUND, 'Channel list not found');
     }
 
     try {
@@ -595,10 +591,7 @@ export class ChannelManager {
   public async markChannelListAsUsed(listId: string): Promise<void> {
     const existingList = await this.getChannelList(listId);
     if (!existingList) {
-      throw new ChannelManagerError(
-        ChannelManagerErrorType.NOT_FOUND,
-        'Channel list not found'
-      );
+      throw new ChannelManagerError(ChannelManagerErrorType.NOT_FOUND, 'Channel list not found');
     }
 
     try {
@@ -620,7 +613,7 @@ export class ChannelManager {
 
     try {
       const invalidChannels: string[] = [];
-      
+
       for (const channelId of channelIds) {
         const channel = await this.getChannel(channelId);
         if (!channel) {
@@ -651,7 +644,11 @@ export class ChannelManager {
   /**
    * Checks for duplicate channel list name
    */
-  private async checkDuplicateChannelListName(ownerId: string, name: string, excludeId?: string): Promise<void> {
+  private async checkDuplicateChannelListName(
+    ownerId: string,
+    name: string,
+    excludeId?: string
+  ): Promise<void> {
     try {
       const duplicateQuery = query(
         collection(this.firestore, 'channelLists'),
@@ -661,7 +658,7 @@ export class ChannelManager {
       );
 
       const duplicateSnap = await getDocs(duplicateQuery);
-      
+
       const hasDuplicate = duplicateSnap.docs.some(doc => {
         return excludeId ? doc.id !== excludeId : true;
       });

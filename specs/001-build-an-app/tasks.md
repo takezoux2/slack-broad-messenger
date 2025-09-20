@@ -102,20 +102,20 @@
 
 ## Phase 3.4: API Endpoints (Sequential - shared middleware)
 
-- [ ] T036 Firebase Auth middleware for API route protection in src/lib/auth-middleware.ts
-- [ ] T037 GET /api/auth/slack endpoint in src/pages/api/auth/slack.ts
-- [ ] T038 GET /api/auth/slack/callback endpoint in src/pages/api/auth/slack/callback.ts
-- [ ] T039 GET /api/channels endpoint in src/pages/api/channels.ts
-- [ ] T040 GET /api/channel-lists endpoint in src/pages/api/channel-lists.ts
-- [ ] T041 POST /api/channel-lists endpoint (add to existing file)
-- [ ] T042 GET /api/channel-lists/[listId] endpoint in src/pages/api/channel-lists/[listId].ts
-- [ ] T043 PUT /api/channel-lists/[listId] endpoint (add to existing file)
-- [ ] T044 DELETE /api/channel-lists/[listId] endpoint (add to existing file)
-- [ ] T045 GET /api/slack-users endpoint in src/pages/api/slack-users.ts
-- [ ] T046 GET /api/messages endpoint in src/pages/api/messages.ts
-- [ ] T047 POST /api/messages endpoint (add to existing file)
-- [ ] T048 GET /api/messages/[messageId] endpoint in src/pages/api/messages/[messageId].ts
-- [ ] T049 GET /api/messages/[messageId]/deliveries endpoint in src/pages/api/messages/[messageId]/deliveries.ts
+- [x] T036 Firebase Auth middleware for API route protection in src/lib/auth-middleware.ts
+- [x] T037 GET /api/auth/slack endpoint in src/pages/api/auth/slack.ts
+- [x] T038 GET /api/auth/slack/callback endpoint in src/pages/api/auth/slack/callback.ts
+- [x] T039 GET /api/channels endpoint in src/pages/api/channels.ts
+- [x] T040 GET /api/channel-lists endpoint in src/pages/api/channel-lists.ts
+- [x] T041 POST /api/channel-lists endpoint (add to existing file)
+- [x] T042 GET /api/channel-lists/[listId] endpoint in src/pages/api/channel-lists/[listId].ts
+- [x] T043 PUT /api/channel-lists/[listId] endpoint (add to existing file)
+- [x] T044 DELETE /api/channel-lists/[listId] endpoint (add to existing file)
+- [x] T045 GET /api/slack-users endpoint in src/pages/api/slack-users.ts
+- [x] T046 GET /api/messages endpoint in src/pages/api/messages.ts
+- [x] T047 POST /api/messages endpoint (add to existing file)
+- [x] T048 GET /api/messages/[messageId] endpoint in src/pages/api/messages/[messageId].ts
+- [x] T049 GET /api/messages/[messageId]/deliveries endpoint in src/pages/api/messages/[messageId]/deliveries.ts
 
 ## Phase 3.5: Frontend Components (Parallel - different files)
 

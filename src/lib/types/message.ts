@@ -69,35 +69,43 @@ export function validateMessage(message: any): MessageValidationResult {
   if (!message.id || typeof message.id !== 'string' || message.id.trim() === '') {
     errors.push({
       field: 'id',
-      message: 'Message ID is required and must be a non-empty string'
+      message: 'Message ID is required and must be a non-empty string',
     });
   }
 
   if (!message.senderId || typeof message.senderId !== 'string' || message.senderId.trim() === '') {
     errors.push({
       field: 'senderId',
-      message: 'Sender ID is required and must be a non-empty string'
+      message: 'Sender ID is required and must be a non-empty string',
     });
   }
 
-  if (!message.selectedSenderId || typeof message.selectedSenderId !== 'string' || message.selectedSenderId.trim() === '') {
+  if (
+    !message.selectedSenderId ||
+    typeof message.selectedSenderId !== 'string' ||
+    message.selectedSenderId.trim() === ''
+  ) {
     errors.push({
       field: 'selectedSenderId',
-      message: 'Selected sender ID is required and must be a non-empty string'
+      message: 'Selected sender ID is required and must be a non-empty string',
     });
   }
 
-  if (!message.channelListId || typeof message.channelListId !== 'string' || message.channelListId.trim() === '') {
+  if (
+    !message.channelListId ||
+    typeof message.channelListId !== 'string' ||
+    message.channelListId.trim() === ''
+  ) {
     errors.push({
       field: 'channelListId',
-      message: 'Channel list ID is required and must be a non-empty string'
+      message: 'Channel list ID is required and must be a non-empty string',
     });
   }
 
   if (!message.content || typeof message.content !== 'string' || message.content.trim() === '') {
     errors.push({
       field: 'content',
-      message: 'Message content is required and must be a non-empty string'
+      message: 'Message content is required and must be a non-empty string',
     });
   }
 
@@ -105,7 +113,7 @@ export function validateMessage(message: any): MessageValidationResult {
   if (message.content && typeof message.content === 'string' && message.content.length > 4000) {
     errors.push({
       field: 'content',
-      message: 'Message content must not exceed 4000 characters (Slack limit)'
+      message: 'Message content must not exceed 4000 characters (Slack limit)',
     });
   }
 
@@ -113,49 +121,68 @@ export function validateMessage(message: any): MessageValidationResult {
   if (!message.status || !Object.values(MessageStatus).includes(message.status)) {
     errors.push({
       field: 'status',
-      message: 'Status must be one of: draft, sending, completed, failed'
+      message: 'Status must be one of: draft, sending, completed, failed',
     });
   }
 
   // Numeric field validations
-  if (typeof message.totalChannels !== 'number' || message.totalChannels < 0 || !Number.isInteger(message.totalChannels)) {
+  if (
+    typeof message.totalChannels !== 'number' ||
+    message.totalChannels < 0 ||
+    !Number.isInteger(message.totalChannels)
+  ) {
     errors.push({
       field: 'totalChannels',
-      message: 'Total channels must be a non-negative integer'
+      message: 'Total channels must be a non-negative integer',
     });
   }
 
-  if (typeof message.successCount !== 'number' || message.successCount < 0 || !Number.isInteger(message.successCount)) {
+  if (
+    typeof message.successCount !== 'number' ||
+    message.successCount < 0 ||
+    !Number.isInteger(message.successCount)
+  ) {
     errors.push({
       field: 'successCount',
-      message: 'Success count must be a non-negative integer'
+      message: 'Success count must be a non-negative integer',
     });
   }
 
-  if (typeof message.failureCount !== 'number' || message.failureCount < 0 || !Number.isInteger(message.failureCount)) {
+  if (
+    typeof message.failureCount !== 'number' ||
+    message.failureCount < 0 ||
+    !Number.isInteger(message.failureCount)
+  ) {
     errors.push({
       field: 'failureCount',
-      message: 'Failure count must be a non-negative integer'
+      message: 'Failure count must be a non-negative integer',
     });
   }
 
-  if (typeof message.skipCount !== 'number' || message.skipCount < 0 || !Number.isInteger(message.skipCount)) {
+  if (
+    typeof message.skipCount !== 'number' ||
+    message.skipCount < 0 ||
+    !Number.isInteger(message.skipCount)
+  ) {
     errors.push({
       field: 'skipCount',
-      message: 'Skip count must be a non-negative integer'
+      message: 'Skip count must be a non-negative integer',
     });
   }
 
   // Count consistency validation
-  if (typeof message.totalChannels === 'number' && 
-      typeof message.successCount === 'number' && 
-      typeof message.failureCount === 'number' && 
-      typeof message.skipCount === 'number') {
+  if (
+    typeof message.totalChannels === 'number' &&
+    typeof message.successCount === 'number' &&
+    typeof message.failureCount === 'number' &&
+    typeof message.skipCount === 'number'
+  ) {
     const calculatedTotal = message.successCount + message.failureCount + message.skipCount;
     if (message.status === MessageStatus.COMPLETED && calculatedTotal !== message.totalChannels) {
       errors.push({
         field: 'counts',
-        message: 'Sum of success, failure, and skip counts must equal total channels for completed messages'
+        message:
+          'Sum of success, failure, and skip counts must equal total channels for completed messages',
       });
     }
   }
@@ -164,36 +191,44 @@ export function validateMessage(message: any): MessageValidationResult {
   if (!message.createdAt || !(message.createdAt instanceof Timestamp)) {
     errors.push({
       field: 'createdAt',
-      message: 'createdAt must be a Firebase Timestamp'
+      message: 'createdAt must be a Firebase Timestamp',
     });
   }
 
   if (message.sentAt !== undefined && !(message.sentAt instanceof Timestamp)) {
     errors.push({
       field: 'sentAt',
-      message: 'sentAt must be a Firebase Timestamp'
+      message: 'sentAt must be a Firebase Timestamp',
     });
   }
 
   if (message.completedAt !== undefined && !(message.completedAt instanceof Timestamp)) {
     errors.push({
       field: 'completedAt',
-      message: 'completedAt must be a Firebase Timestamp'
+      message: 'completedAt must be a Firebase Timestamp',
     });
   }
 
   // Timestamp sequence validation
-  if (message.sentAt && message.createdAt && message.sentAt.toMillis() < message.createdAt.toMillis()) {
+  if (
+    message.sentAt &&
+    message.createdAt &&
+    message.sentAt.toMillis() < message.createdAt.toMillis()
+  ) {
     errors.push({
       field: 'sentAt',
-      message: 'sentAt must be after createdAt'
+      message: 'sentAt must be after createdAt',
     });
   }
 
-  if (message.completedAt && message.sentAt && message.completedAt.toMillis() < message.sentAt.toMillis()) {
+  if (
+    message.completedAt &&
+    message.sentAt &&
+    message.completedAt.toMillis() < message.sentAt.toMillis()
+  ) {
     errors.push({
       field: 'completedAt',
-      message: 'completedAt must be after sentAt'
+      message: 'completedAt must be after sentAt',
     });
   }
 
@@ -201,15 +236,20 @@ export function validateMessage(message: any): MessageValidationResult {
   if (message.senderId && typeof message.senderId === 'string' && message.senderId.length < 28) {
     errors.push({
       field: 'senderId',
-      message: 'Sender ID must be a valid Firebase Auth UID'
+      message: 'Sender ID must be a valid Firebase Auth UID',
     });
   }
 
   // Slack user ID format validation
-  if (message.selectedSenderId && typeof message.selectedSenderId === 'string' && !message.selectedSenderId.match(/^U[A-Z0-9]+$/)) {
+  if (
+    message.selectedSenderId &&
+    typeof message.selectedSenderId === 'string' &&
+    !message.selectedSenderId.match(/^U[A-Z0-9]+$/)
+  ) {
     errors.push({
       field: 'selectedSenderId',
-      message: 'Selected sender ID must follow Slack user ID format (U followed by alphanumeric characters)'
+      message:
+        'Selected sender ID must follow Slack user ID format (U followed by alphanumeric characters)',
     });
   }
 
@@ -217,20 +257,23 @@ export function validateMessage(message: any): MessageValidationResult {
   if (message.status === MessageStatus.SENDING && !message.sentAt) {
     errors.push({
       field: 'sentAt',
-      message: 'sentAt is required when status is sending'
+      message: 'sentAt is required when status is sending',
     });
   }
 
-  if ((message.status === MessageStatus.COMPLETED || message.status === MessageStatus.FAILED) && !message.completedAt) {
+  if (
+    (message.status === MessageStatus.COMPLETED || message.status === MessageStatus.FAILED) &&
+    !message.completedAt
+  ) {
     errors.push({
       field: 'completedAt',
-      message: 'completedAt is required when status is completed or failed'
+      message: 'completedAt is required when status is completed or failed',
     });
   }
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -239,7 +282,7 @@ export function validateMessage(message: any): MessageValidationResult {
  */
 export function createMessage(data: Partial<Message>): Message {
   const now = Timestamp.now();
-  
+
   return {
     id: data.id || '',
     senderId: data.senderId || '',
@@ -253,7 +296,7 @@ export function createMessage(data: Partial<Message>): Message {
     skipCount: data.skipCount ?? 0,
     createdAt: data.createdAt || now,
     sentAt: data.sentAt,
-    completedAt: data.completedAt
+    completedAt: data.completedAt,
   };
 }
 
@@ -272,21 +315,26 @@ export function startMessageSending(message: Message): Message {
   return {
     ...message,
     status: MessageStatus.SENDING,
-    sentAt: Timestamp.now()
+    sentAt: Timestamp.now(),
   };
 }
 
 /**
  * Updates message status to COMPLETED and sets completedAt timestamp
  */
-export function completeMessage(message: Message, successCount: number, failureCount: number, skipCount: number): Message {
+export function completeMessage(
+  message: Message,
+  successCount: number,
+  failureCount: number,
+  skipCount: number
+): Message {
   return {
     ...message,
     status: MessageStatus.COMPLETED,
     successCount,
     failureCount,
     skipCount,
-    completedAt: Timestamp.now()
+    completedAt: Timestamp.now(),
   };
 }
 
@@ -297,7 +345,7 @@ export function failMessage(message: Message, reason?: string): Message {
   return {
     ...message,
     status: MessageStatus.FAILED,
-    completedAt: Timestamp.now()
+    completedAt: Timestamp.now(),
   };
 }
 
@@ -306,7 +354,7 @@ export function failMessage(message: Message, reason?: string): Message {
  */
 export function calculateMessageProgress(message: Message): number {
   if (message.totalChannels === 0) return 0;
-  
+
   const processedChannels = message.successCount + message.failureCount + message.skipCount;
   return Math.round((processedChannels / message.totalChannels) * 100);
 }
