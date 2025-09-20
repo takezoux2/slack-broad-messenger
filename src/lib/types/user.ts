@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 /**
  * Represents the application user who creates channel lists and sends messages
  * Storage: Firebase Authentication + Firestore user profile
@@ -15,22 +17,32 @@ export interface User {
   avatar?: string;
   /** Slack workspace/team ID */
   slackTeamId: string;
+  /** Slack access token for API calls */
+  slackAccessToken?: string;
+  /** Slack OAuth scope */
+  slackScope?: string;
   /** Account creation time */
-  createdAt: Date;
+  createdAt: Timestamp;
   /** Last login timestamp */
-  lastLoginAt: Date;
+  lastLoginAt: Timestamp;
   /** Account status */
   isActive: boolean;
 }
 
 /**
- * Validation error for User data
+ * Validation errors for User
  */
-export class UserValidationError extends Error {
-  constructor(message: string, public field?: string) {
-    super(message);
-    this.name = 'UserValidationError';
-  }
+export interface UserValidationError {
+  field: string;
+  message: string;
+}
+
+/**
+ * Validation result for User
+ */
+export interface UserValidationResult {
+  isValid: boolean;
+  errors: UserValidationError[];
 }
 
 /**
@@ -61,69 +73,120 @@ function isValidDisplayName(displayName: string): boolean {
 
 /**
  * Validates a User object according to the data model rules
- * @param user - The user object to validate
- * @throws UserValidationError if validation fails
  */
-export function validateUser(user: Partial<User>): asserts user is User {
+export function validateUser(user: any): UserValidationResult {
+  const errors: UserValidationError[] = [];
+
+  // Required field validations
   if (!user.uid || !isValidFirebaseUID(user.uid)) {
-    throw new UserValidationError('uid must be a valid Firebase Auth UID', 'uid');
+    errors.push({
+      field: 'uid',
+      message: 'uid must be a valid Firebase Auth UID'
+    });
   }
 
   if (!user.email || !isValidEmail(user.email)) {
-    throw new UserValidationError('email must be a valid email format', 'email');
+    errors.push({
+      field: 'email',
+      message: 'email must be a valid email format'
+    });
   }
 
   if (!user.slackUserId || typeof user.slackUserId !== 'string' || user.slackUserId.trim().length === 0) {
-    throw new UserValidationError('slackUserId is required and must be a non-empty string', 'slackUserId');
+    errors.push({
+      field: 'slackUserId',
+      message: 'slackUserId is required and must be a non-empty string'
+    });
   }
 
   if (!user.displayName || !isValidDisplayName(user.displayName)) {
-    throw new UserValidationError('displayName is required and must be 1-100 characters', 'displayName');
+    errors.push({
+      field: 'displayName',
+      message: 'displayName is required and must be 1-100 characters'
+    });
   }
 
   if (!user.slackTeamId || typeof user.slackTeamId !== 'string' || user.slackTeamId.trim().length === 0) {
-    throw new UserValidationError('slackTeamId is required and must be a non-empty string', 'slackTeamId');
+    errors.push({
+      field: 'slackTeamId',
+      message: 'slackTeamId is required and must be a non-empty string'
+    });
   }
 
-  if (!user.createdAt || !(user.createdAt instanceof Date)) {
-    throw new UserValidationError('createdAt must be a valid Date', 'createdAt');
+  if (!user.createdAt || !(user.createdAt instanceof Timestamp)) {
+    errors.push({
+      field: 'createdAt',
+      message: 'createdAt must be a Firebase Timestamp'
+    });
   }
 
-  if (!user.lastLoginAt || !(user.lastLoginAt instanceof Date)) {
-    throw new UserValidationError('lastLoginAt must be a valid Date', 'lastLoginAt');
+  if (!user.lastLoginAt || !(user.lastLoginAt instanceof Timestamp)) {
+    errors.push({
+      field: 'lastLoginAt',
+      message: 'lastLoginAt must be a Firebase Timestamp'
+    });
   }
 
   if (typeof user.isActive !== 'boolean') {
-    throw new UserValidationError('isActive must be a boolean value', 'isActive');
+    errors.push({
+      field: 'isActive',
+      message: 'isActive must be a boolean value'
+    });
   }
 
-  // Avatar is optional, but if provided should be a string
+  // Optional field validations
   if (user.avatar !== undefined && (typeof user.avatar !== 'string' || user.avatar.trim().length === 0)) {
-    throw new UserValidationError('avatar must be a non-empty string if provided', 'avatar');
+    errors.push({
+      field: 'avatar',
+      message: 'avatar must be a non-empty string if provided'
+    });
   }
+
+  if (user.slackAccessToken !== undefined && (typeof user.slackAccessToken !== 'string' || user.slackAccessToken.trim().length === 0)) {
+    errors.push({
+      field: 'slackAccessToken',
+      message: 'slackAccessToken must be a non-empty string if provided'
+    });
+  }
+
+  if (user.slackScope !== undefined && (typeof user.slackScope !== 'string' || user.slackScope.trim().length === 0)) {
+    errors.push({
+      field: 'slackScope',
+      message: 'slackScope must be a non-empty string if provided'
+    });
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 }
 
 /**
- * Creates a new User object with validation
- * @param userData - Partial user data to create a User from
- * @returns Validated User object
- * @throws UserValidationError if validation fails
+ * Creates a new User object with default values
  */
 export function createUser(userData: Partial<User>): User {
-  validateUser(userData);
-  return userData as User;
+  const now = Timestamp.now();
+  
+  return {
+    uid: userData.uid || '',
+    email: userData.email || '',
+    slackUserId: userData.slackUserId || '',
+    displayName: userData.displayName || '',
+    avatar: userData.avatar,
+    slackTeamId: userData.slackTeamId || '',
+    slackAccessToken: userData.slackAccessToken,
+    slackScope: userData.slackScope,
+    createdAt: userData.createdAt || now,
+    lastLoginAt: userData.lastLoginAt || now,
+    isActive: userData.isActive ?? true,
+  };
 }
 
 /**
  * Type guard to check if an object is a valid User
- * @param obj - Object to check
- * @returns true if obj is a valid User
  */
 export function isUser(obj: any): obj is User {
-  try {
-    validateUser(obj);
-    return true;
-  } catch {
-    return false;
-  }
+  const result = validateUser(obj);
+  return result.isValid;
 }

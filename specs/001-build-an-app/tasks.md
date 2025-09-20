@@ -87,18 +87,18 @@
 
 - [x] T025 [P] User interface and validation in src/lib/types/user.ts
 - [x] T026 [P] SlackUser interface and validation in src/lib/types/slack-user.ts
-- [ ] T027 [P] Channel interface and validation in src/lib/types/channel.ts
-- [ ] T028 [P] ChannelList interface and validation in src/lib/types/channel-list.ts
-- [ ] T029 [P] Message interface and validation in src/lib/types/message.ts
-- [ ] T030 [P] MessageDelivery interface and validation in src/lib/types/message-delivery.ts
+- [x] T027 [P] Channel interface and validation in src/lib/types/channel.ts
+- [x] T028 [P] ChannelList interface and validation in src/lib/types/channel-list.ts
+- [x] T029 [P] Message interface and validation in src/lib/types/message.ts
+- [x] T030 [P] MessageDelivery interface and validation in src/lib/types/message-delivery.ts
 
 ### Core Libraries
 
-- [ ] T031 [P] Firebase configuration and initialization in src/lib/firebase.ts
-- [ ] T032 [P] Slack API client configuration in src/lib/slack.ts
-- [ ] T033 [P] Authentication manager library in src/lib/auth-manager.ts
-- [ ] T034 [P] Channel manager library for CRUD operations in src/lib/channel-manager.ts
-- [ ] T035 [P] Message sender library for batch messaging in src/lib/message-sender.ts
+- [x] T031 [P] Firebase configuration and initialization in src/lib/firebase.ts
+- [x] T032 [P] Slack API client configuration in src/lib/slack.ts
+- [x] T033 [P] Authentication manager library in src/lib/auth-manager.ts
+- [x] T034 [P] Channel manager library for CRUD operations in src/lib/channel-manager.ts
+- [x] T035 [P] Message sender library for batch messaging in src/lib/message-sender.ts
 
 ## Phase 3.4: API Endpoints (Sequential - shared middleware)
 
