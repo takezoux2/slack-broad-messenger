@@ -85,8 +85,8 @@
 
 ### Data Models and Types
 
-- [ ] T025 [P] User interface and validation in src/lib/types/user.ts
-- [ ] T026 [P] SlackUser interface and validation in src/lib/types/slack-user.ts
+- [x] T025 [P] User interface and validation in src/lib/types/user.ts
+- [x] T026 [P] SlackUser interface and validation in src/lib/types/slack-user.ts
 - [ ] T027 [P] Channel interface and validation in src/lib/types/channel.ts
 - [ ] T028 [P] ChannelList interface and validation in src/lib/types/channel-list.ts
 - [ ] T029 [P] Message interface and validation in src/lib/types/message.ts
