@@ -27,7 +27,7 @@ describe('Contract: PUT /api/auth/profile', () => {
   beforeEach(async () => {
     // Import the handler (will fail initially as endpoint doesn't exist)
     try {
-      const { PUT } = await import('../../src/pages/api/auth/profile');
+      const { PUT } = await import('../../src/app/api/auth/profile/route');
       mockHandler = PUT;
     } catch {
       mockHandler = null;

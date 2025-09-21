@@ -28,7 +28,7 @@ describe('Contract: GET /api/auth/profile', () => {
   beforeEach(async () => {
     // Import the handler (will fail initially as endpoint doesn't exist)
     try {
-      const { GET } = await import('../../src/pages/api/auth/profile');
+      const { GET } = await import('../../src/app/api/auth/profile/route');
       mockHandler = GET;
     } catch {
       mockHandler = null;
@@ -39,13 +39,13 @@ describe('Contract: GET /api/auth/profile', () => {
     // Clean up any test state
   });
 
-  it('should fail initially - handler not implemented', () => {
-    expect(mockHandler).toBeNull();
+  it('should have implemented handler', () => {
+    expect(mockHandler).not.toBeNull();
   });
 
   it('should return user profile for authenticated user', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const authenticatedRequest = new NextRequest('http://localhost:3000/api/auth/profile', {
@@ -66,7 +66,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should reject request without authorization header', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const unauthenticatedRequest = new NextRequest('http://localhost:3000/api/auth/profile');
@@ -82,7 +82,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should reject request with invalid authorization header format', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const invalidRequest = new NextRequest('http://localhost:3000/api/auth/profile', {
@@ -101,7 +101,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should reject request with invalid Firebase token', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const invalidTokenRequest = new NextRequest('http://localhost:3000/api/auth/profile', {
@@ -120,7 +120,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should reject request with expired Firebase token', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const expiredTokenRequest = new NextRequest('http://localhost:3000/api/auth/profile', {
@@ -139,7 +139,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should return 404 for user not found in Firestore', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const validTokenNotFoundRequest = new NextRequest('http://localhost:3000/api/auth/profile', {
@@ -159,7 +159,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should handle server errors gracefully', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const request = new NextRequest('http://localhost:3000/api/auth/profile', {
@@ -181,7 +181,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should validate all response fields when successful', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const authenticatedRequest = new NextRequest('http://localhost:3000/api/auth/profile', {
@@ -221,7 +221,7 @@ describe('Contract: GET /api/auth/profile', () => {
 
   it('should handle different authorization header case variations', async () => {
     if (!mockHandler) {
-      expect.fail('Handler not implemented yet - this test should fail in TDD phase');
+      expect.fail('Handler not implemented - this should not happen in current phase');
     }
 
     const caseVariationRequest = new NextRequest('http://localhost:3000/api/auth/profile', {

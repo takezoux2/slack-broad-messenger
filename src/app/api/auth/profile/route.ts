@@ -1,8 +1,8 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { AuthManager } from '../../../lib/auth-manager';
-import type { User } from '../../../lib/types/user';
+import { AuthManager } from '../../../../lib/auth-manager';
+import type { User } from '../../../../lib/types/user';
 
 // Request validation schema for PUT requests
 const ProfileUpdateRequestSchema = z.object({

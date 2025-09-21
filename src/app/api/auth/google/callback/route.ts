@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
-import { AuthManager } from '../../../../lib/auth-manager';
+import { AuthManager } from '../../../../../lib/auth-manager';
 
 // Initialize the auth manager
 const authManager = new AuthManager();

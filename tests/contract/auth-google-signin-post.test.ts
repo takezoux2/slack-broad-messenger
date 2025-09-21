@@ -26,7 +26,7 @@ describe('Contract: POST /api/auth/google/signin', () => {
   beforeEach(async () => {
     // Import the handler (will fail initially as endpoint doesn't exist)
     try {
-      const { POST } = await import('../../src/pages/api/auth/google/signin');
+      const { POST } = await import('../../src/app/api/auth/google/signin/route');
       mockHandler = POST;
     } catch (error) {
       mockHandler = null;

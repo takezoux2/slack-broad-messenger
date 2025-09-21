@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { testClient } from "../setup";
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { testClient } from '../setup';
 
-describe("Contract: GET /api/messages/{messageId}/deliveries", () => {
+describe('Contract: GET /api/messages/{messageId}/deliveries', () => {
   beforeAll(async () => {
     // Setup test environment if needed
   });
@@ -10,11 +10,9 @@ describe("Contract: GET /api/messages/{messageId}/deliveries", () => {
     // Cleanup test environment if needed
   });
 
-  it("should return delivery status for all channels", async () => {
-    const messageId = "test-message-id-123";
-    const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries`,
-    );
+  it('should return delivery status for all channels', async () => {
+    const messageId = 'test-message-id-123';
+    const response = await testClient.get(`/api/messages/${messageId}/deliveries`);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(
@@ -37,58 +35,52 @@ describe("Contract: GET /api/messages/{messageId}/deliveries", () => {
           failed: expect.any(Number),
           pending: expect.any(Number),
         }),
-      }),
+      })
     );
   });
 
-  it("should require authentication", async () => {
-    const messageId = "test-message-id-123";
-    const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries`,
-    );
+  it('should require authentication', async () => {
+    const messageId = 'test-message-id-123';
+    const response = await testClient.get(`/api/messages/${messageId}/deliveries`);
 
     expect([401, 403]).toContain(response.status);
     expect(response.body).toEqual(
       expect.objectContaining({
-        error: expect.stringContaining("authentication"),
-      }),
+        error: expect.stringContaining('authentication'),
+      })
     );
   });
 
-  it("should return 404 for non-existent message", async () => {
-    const messageId = "non-existent-message-id";
-    const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries`,
-    );
+  it('should return 404 for non-existent message', async () => {
+    const messageId = 'non-existent-message-id';
+    const response = await testClient.get(`/api/messages/${messageId}/deliveries`);
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual(
       expect.objectContaining({
-        error: expect.stringContaining("Message not found"),
-      }),
+        error: expect.stringContaining('Message not found'),
+      })
     );
   });
 
-  it("should filter deliveries by status", async () => {
-    const messageId = "filter-test-message-id";
-    const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries?status=failed`,
-    );
+  it('should filter deliveries by status', async () => {
+    const messageId = 'filter-test-message-id';
+    const response = await testClient.get(`/api/messages/${messageId}/deliveries?status=failed`);
 
     if (response.status === 200) {
       const body = response.body as { deliveries: Array<{ status: string }> };
       const deliveries = body.deliveries;
 
-      deliveries.forEach((delivery) => {
-        expect(delivery.status).toBe("failed");
+      deliveries.forEach(delivery => {
+        expect(delivery.status).toBe('failed');
       });
     }
   });
 
-  it("should support pagination for large channel lists", async () => {
-    const messageId = "pagination-test-message-id";
+  it('should support pagination for large channel lists', async () => {
+    const messageId = 'pagination-test-message-id';
     const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries?limit=10&offset=0`,
+      `/api/messages/${messageId}/deliveries?limit=10&offset=0`
     );
 
     if (response.status === 200) {
@@ -101,7 +93,7 @@ describe("Contract: GET /api/messages/{messageId}/deliveries", () => {
             offset: 0,
             hasMore: expect.any(Boolean),
           }),
-        }),
+        })
       );
 
       const body = response.body as { deliveries: unknown[] };
@@ -110,11 +102,9 @@ describe("Contract: GET /api/messages/{messageId}/deliveries", () => {
     }
   });
 
-  it("should include error details for failed deliveries", async () => {
-    const messageId = "error-details-message-id";
-    const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries?status=failed`,
-    );
+  it('should include error details for failed deliveries', async () => {
+    const messageId = 'error-details-message-id';
+    const response = await testClient.get(`/api/messages/${messageId}/deliveries?status=failed`);
 
     if (response.status === 200) {
       const body = response.body as {
@@ -125,43 +115,24 @@ describe("Contract: GET /api/messages/{messageId}/deliveries", () => {
         }>;
       };
 
-      const failedDeliveries = body.deliveries.filter(
-        (d) => d.status === "failed",
-      );
-      failedDeliveries.forEach((delivery) => {
+      const failedDeliveries = body.deliveries.filter(d => d.status === 'failed');
+      failedDeliveries.forEach(delivery => {
         expect(delivery.error).toBeTruthy();
         expect(delivery.retryCount).toBeGreaterThanOrEqual(0);
       });
     }
   });
 
-  it("should provide real-time updates via polling", async () => {
-    const messageId = "realtime-test-message-id";
-    const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries`,
-    );
+  it('should provide real-time updates via polling', async () => {
+    const messageId = 'realtime-test-message-id';
+    const response = await testClient.get(`/api/messages/${messageId}/deliveries`);
 
     if (response.status === 200) {
       expect(response.body).toEqual(
         expect.objectContaining({
           lastUpdated: expect.any(String),
           isComplete: expect.any(Boolean),
-        }),
-      );
-    }
-  });
-});
-    const messageId = "realtime-test-message-id";
-    const response = await testClient.get(
-      `/api/messages/${messageId}/deliveries`,
-    );
-
-    if (response.status === 200) {
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          lastUpdated: expect.any(String),
-          isComplete: expect.any(Boolean),
-        }),
+        })
       );
     }
   });

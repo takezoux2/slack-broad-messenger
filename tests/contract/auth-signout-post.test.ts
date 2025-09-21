@@ -21,7 +21,7 @@ describe('Contract: POST /api/auth/signout', () => {
   beforeEach(async () => {
     // Import the handler (will fail initially as endpoint doesn't exist)
     try {
-      const { POST } = await import('../../src/pages/api/auth/signout');
+      const { POST } = await import('../../src/app/api/auth/signout/route');
       mockHandler = POST;
     } catch {
       mockHandler = null;

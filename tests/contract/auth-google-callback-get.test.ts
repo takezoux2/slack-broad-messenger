@@ -26,7 +26,7 @@ describe('Contract: GET /api/auth/google/callback', () => {
   beforeEach(async () => {
     // Import the handler (will fail initially as endpoint doesn't exist)
     try {
-      const { GET } = await import('../../src/pages/api/auth/google/callback');
+      const { GET } = await import('../../src/app/api/auth/google/callback/route');
       mockHandler = GET;
     } catch {
       mockHandler = null;
