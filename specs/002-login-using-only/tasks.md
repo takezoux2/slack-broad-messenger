@@ -27,57 +27,57 @@
 
 ### Authentication Manager Updates
 
-- [ ] T013 Remove Slack OAuth methods from src/lib/auth-manager.ts
-- [ ] T014 Add Google OAuth methods to src/lib/auth-manager.ts
-- [ ] T015 Update user profile structure for Google data in src/lib/auth-manager.ts
-- [ ] T016 Add Google-specific error handling to src/lib/auth-manager.ts
+- [x] T013 Remove Slack OAuth methods from src/lib/auth-manager.ts
+- [x] T014 Add Google OAuth methods to src/lib/auth-manager.ts
+- [x] T015 Update user profile structure for Google data in src/lib/auth-manager.ts
+- [x] T016 Add Google-specific error handling to src/lib/auth-manager.ts
 
 ### API Route Implementation
 
-- [ ] T017 [P] Implement POST /api/auth/google/signin in src/pages/api/auth/google/signin.ts
-- [ ] T018 [P] Implement GET /api/auth/google/callback in src/pages/api/auth/google/callback.ts
-- [ ] T019 [P] Update GET /api/auth/profile for Google user data in src/pages/api/auth/profile.ts
-- [ ] T020 [P] Update PUT /api/auth/profile for Google user fields in src/pages/api/auth/profile.ts
-- [ ] T021 [P] Implement POST /api/auth/signout in src/pages/api/auth/signout.ts
+- [x] T017 [P] Implement POST /api/auth/google/signin in src/pages/api/auth/google/signin.ts
+- [x] T018 [P] Implement GET /api/auth/google/callback in src/pages/api/auth/google/callback.ts
+- [x] T019 [P] Update GET /api/auth/profile for Google user data in src/pages/api/auth/profile.ts
+- [x] T020 [P] Update PUT /api/auth/profile for Google user fields in src/pages/api/auth/profile.ts
+- [x] T021 [P] Implement POST /api/auth/signout in src/pages/api/auth/signout.ts
 
 ### Authentication Provider Updates
 
-- [ ] T022 Update AuthProvider for Google sign-in in src/components/providers/AuthProvider.tsx
-- [ ] T023 Add Google sign-in button to authentication UI in src/components/providers/AuthProvider.tsx
-- [ ] T024 Remove Slack authentication UI elements from src/components/providers/AuthProvider.tsx
-- [ ] T025 Update error handling for Google auth errors in src/components/providers/AuthProvider.tsx
+- [x] T022 Update AuthProvider for Google sign-in in src/components/providers/AuthProvider.tsx
+- [x] T023 Add Google sign-in button to authentication UI in src/components/providers/AuthProvider.tsx
+- [x] T024 Remove Slack authentication UI elements from src/components/providers/AuthProvider.tsx
+- [x] T025 Update error handling for Google auth errors in src/components/providers/AuthProvider.tsx
 
 ### Server-Side Authentication
 
-- [ ] T026 Update getServerAuth for Google tokens in src/lib/auth-server.ts
-- [ ] T027 Update getServerUserProfile for Google user data in src/lib/auth-server.ts
-- [ ] T028 Add Google token validation in src/lib/auth-server.ts
+- [x] T026 Update getServerAuth for Google tokens in src/lib/auth-server.ts
+- [x] T027 Update getServerUserProfile for Google user data in src/lib/auth-server.ts
+- [x] T028 Add Google token validation in src/lib/auth-server.ts
 
 ## Phase 3.4: Integration
 
-- [ ] T029 Connect Google OAuth to Firestore user creation
-- [ ] T030 Update Firestore security rules for Google authenticated users
-- [ ] T031 Implement user profile synchronization with Google account data
-- [ ] T032 Add authentication middleware validation for Google tokens
-- [ ] T033 Update session management for Google authentication
+- [x] T029 Connect Google OAuth to Firestore user creation
+- [x] T030 Update Firestore security rules for Google authenticated users
+- [x] T031 Implement user profile synchronization with Google account data
+- [x] T032 Add authentication middleware validation for Google tokens
+- [x] T033 Update session management for Google authentication
 
 ## Phase 3.5: Data Model Updates
 
-- [ ] T034 [P] Remove Slack-related fields from User entity in Firestore
-- [ ] T035 [P] Add Google-specific fields to User entity in Firestore
-- [ ] T036 [P] Update user validation rules for Google data in src/lib/validation.ts
-- [ ] T037 [P] Add Google account linking logic in src/lib/auth-manager.ts
+- [x] T034 [P] Remove Slack-related fields from User entity in Firestore
+- [x] T035 [P] Add Google-specific fields to User entity in Firestore
+- [x] T036 [P] Update user validation rules for Google data in src/lib/validation.ts
+- [x] T037 [P] Add Google account linking logic in src/lib/auth-manager.ts
 
 ## Phase 3.6: Polish
 
-- [ ] T038 [P] Unit tests for Google OAuth methods in tests/unit/auth-manager.test.ts
-- [ ] T039 [P] Unit tests for Google user validation in tests/unit/validation.test.ts
-- [ ] T040 [P] Unit tests for AuthProvider Google methods in tests/unit/auth-provider.test.ts
-- [ ] T041 Performance tests for authentication flow (<2s Google OAuth)
-- [ ] T042 [P] Update docs/api.md with Google authentication endpoints
-- [ ] T043 [P] Update README.md with Google authentication setup
-- [ ] T044 Remove Slack-related code and comments
-- [ ] T045 Run quickstart.md manual testing scenarios
+- [x] T038 [P] Unit tests for Google OAuth methods in tests/unit/auth-manager.test.ts
+- [x] T039 [P] Unit tests for Google user validation in tests/unit/validation.test.ts
+- [x] T040 [P] Unit tests for AuthProvider Google methods in tests/unit/auth-provider.test.ts
+- [x] T041 Performance tests for authentication flow (<2s Google OAuth)
+- [x] T042 [P] Update docs/api.md with Google authentication endpoints
+- [x] T043 [P] Update README.md with Google authentication setup
+- [x] T044 Remove Slack-related code and comments
+- [x] T045 Run quickstart.md manual testing scenarios
 
 ## Dependencies
 
