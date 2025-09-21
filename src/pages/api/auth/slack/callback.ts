@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { AuthManager } from '../../../../lib/auth-manager';
+import { getAuthManager } from '../../../../lib/auth-manager';
 import { exchangeSlackCode } from '../../../../lib/slack';
 
 interface ErrorResponse {
@@ -50,7 +50,7 @@ export default async function handler(
   }
 
   try {
-    const authManager = new AuthManager();
+    const authManager = getAuthManager();
 
     // Validate OAuth state
     const oauthState = authManager.validateSlackOAuthState(state);
@@ -68,8 +68,8 @@ export default async function handler(
         uid: user.uid,
         email: user.email,
         displayName: user.displayName,
-        slackUserId: user.slackUserId!,
-        slackTeamId: user.slackTeamId!,
+        slackUserId: user.slackUserId || '',
+        slackTeamId: user.slackTeamId || '',
       },
     });
   } catch (error) {

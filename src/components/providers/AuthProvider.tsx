@@ -1,10 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
+import type { User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import type { User } from '../../lib/types/user';
 import { useFirebase } from './FirebaseProvider';
-import { AuthManager } from '../../lib/auth-manager';
-import { User } from '../../lib/types/user';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -13,6 +13,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   signOut: () => Promise<void>;
   startSlackAuth: () => Promise<string>;
+  refreshUserProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -25,11 +26,39 @@ export const useAuth = () => {
   return context;
 };
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+interface AuthProviderProps {
+  children: React.ReactNode;
+  initialUser?: User | null;
+}
+
+export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const { auth, isInitialized } = useFirebase();
   const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [userProfile, setUserProfile] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<User | null>(initialUser || null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const refreshUserProfile = useCallback(async () => {
+    const firebaseUser = auth?.currentUser;
+    if (!firebaseUser) {
+      setUserProfile(null);
+      return;
+    }
+
+    try {
+      // Call API to get user profile
+      const response = await fetch('/api/auth/profile');
+      if (response.ok) {
+        const profile = await response.json();
+        setUserProfile(profile);
+      } else {
+        console.error('Failed to fetch user profile');
+        setUserProfile(null);
+      }
+    } catch (error) {
+      console.error('Failed to load user profile:', error);
+      setUserProfile(null);
+    }
+  }, [auth]);
 
   useEffect(() => {
     if (!auth || !isInitialized) return;
@@ -38,13 +67,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(firebaseUser);
 
       if (firebaseUser) {
-        try {
-          const authManager = new AuthManager();
-          const profile = await authManager.getUserProfile(firebaseUser.uid);
-          setUserProfile(profile);
-        } catch (error) {
-          console.error('Failed to load user profile:', error);
-          setUserProfile(null);
+        // Only fetch profile if we don't have initial data
+        if (!initialUser) {
+          await refreshUserProfile();
         }
       } else {
         setUserProfile(null);
@@ -54,23 +79,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [auth, isInitialized]);
+  }, [auth, isInitialized, initialUser, refreshUserProfile]);
 
   const signOut = async () => {
     if (!auth) return;
 
     try {
-      const authManager = new AuthManager();
-      await authManager.signOut();
+      // Call API to handle server-side sign out
+      await fetch('/api/auth/signout', { method: 'POST' });
+
+      // Sign out from Firebase
+      await auth.signOut();
     } catch (error) {
       console.error('Sign out failed:', error);
     }
   };
 
   const startSlackAuth = async (): Promise<string> => {
-    const authManager = new AuthManager();
-    const state = authManager.generateSlackOAuthState();
-
     // Make API call to get Slack OAuth URL
     const response = await fetch('/api/auth/slack');
     const data = await response.json();
@@ -89,6 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: !!user,
     signOut,
     startSlackAuth,
+    refreshUserProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

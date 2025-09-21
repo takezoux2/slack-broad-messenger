@@ -1,14 +1,12 @@
-import {
-  User as FirebaseUser,
-  signInWithCustomToken,
-  signOut,
-  onAuthStateChanged,
-  UserCredential,
-} from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc, Timestamp, DocumentReference } from 'firebase/firestore';
+import type { User as FirebaseUser } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import type { DocumentReference } from 'firebase/firestore';
+import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { getFirebaseAuth, getFirebaseFirestore } from './firebase';
-import { SlackTokenInfo, testSlackConnection } from './slack';
-import { User, createUser, validateUser } from './types/user';
+import type { SlackTokenInfo } from './slack';
+import { testSlackConnection } from './slack';
+import type { User } from './types/user';
+import { createUser, validateUser } from './types/user';
 
 /**
  * Authentication state interface
@@ -129,7 +127,9 @@ export class AuthManager {
    */
   private updateAuthState(newState: AuthState): void {
     this.currentAuthState = newState;
-    this.authStateListeners.forEach(listener => listener(newState));
+    this.authStateListeners.forEach(listener => {
+      listener(newState);
+    });
   }
 
   /**

@@ -76,18 +76,33 @@ function isValidDisplayName(displayName: string): boolean {
 /**
  * Validates a User object according to the data model rules
  */
-export function validateUser(user: any): UserValidationResult {
+export function validateUser(user: unknown): UserValidationResult {
   const errors: UserValidationError[] = [];
 
+  // Check if user is null or undefined
+  if (!user || typeof user !== 'object') {
+    errors.push({
+      field: 'user',
+      message: 'User must be a valid object',
+    });
+    return {
+      isValid: false,
+      errors,
+    };
+  }
+
+  // Type assert user as any after checking it's an object for property access
+  const userData = user as Record<string, unknown>;
+
   // Required field validations
-  if (!user.uid || !isValidFirebaseUID(user.uid)) {
+  if (!userData.uid || !isValidFirebaseUID(userData.uid as string)) {
     errors.push({
       field: 'uid',
       message: 'uid must be a valid Firebase Auth UID',
     });
   }
 
-  if (!user.email || !isValidEmail(user.email)) {
+  if (!userData.email || !isValidEmail(userData.email as string)) {
     errors.push({
       field: 'email',
       message: 'email must be a valid email format',
@@ -95,9 +110,9 @@ export function validateUser(user: any): UserValidationResult {
   }
 
   if (
-    !user.slackUserId ||
-    typeof user.slackUserId !== 'string' ||
-    user.slackUserId.trim().length === 0
+    !userData.slackUserId ||
+    typeof userData.slackUserId !== 'string' ||
+    userData.slackUserId.trim().length === 0
   ) {
     errors.push({
       field: 'slackUserId',
@@ -105,7 +120,7 @@ export function validateUser(user: any): UserValidationResult {
     });
   }
 
-  if (!user.displayName || !isValidDisplayName(user.displayName)) {
+  if (!userData.displayName || !isValidDisplayName(userData.displayName as string)) {
     errors.push({
       field: 'displayName',
       message: 'displayName is required and must be 1-100 characters',
@@ -113,9 +128,9 @@ export function validateUser(user: any): UserValidationResult {
   }
 
   if (
-    !user.slackTeamId ||
-    typeof user.slackTeamId !== 'string' ||
-    user.slackTeamId.trim().length === 0
+    !userData.slackTeamId ||
+    typeof userData.slackTeamId !== 'string' ||
+    userData.slackTeamId.trim().length === 0
   ) {
     errors.push({
       field: 'slackTeamId',
@@ -123,21 +138,21 @@ export function validateUser(user: any): UserValidationResult {
     });
   }
 
-  if (!user.createdAt || !(user.createdAt instanceof Timestamp)) {
+  if (!userData.createdAt || !(userData.createdAt instanceof Timestamp)) {
     errors.push({
       field: 'createdAt',
       message: 'createdAt must be a Firebase Timestamp',
     });
   }
 
-  if (!user.lastLoginAt || !(user.lastLoginAt instanceof Timestamp)) {
+  if (!userData.lastLoginAt || !(userData.lastLoginAt instanceof Timestamp)) {
     errors.push({
       field: 'lastLoginAt',
       message: 'lastLoginAt must be a Firebase Timestamp',
     });
   }
 
-  if (typeof user.isActive !== 'boolean') {
+  if (typeof userData.isActive !== 'boolean') {
     errors.push({
       field: 'isActive',
       message: 'isActive must be a boolean value',
@@ -146,8 +161,8 @@ export function validateUser(user: any): UserValidationResult {
 
   // Optional field validations
   if (
-    user.avatar !== undefined &&
-    (typeof user.avatar !== 'string' || user.avatar.trim().length === 0)
+    userData.avatar !== undefined &&
+    (typeof userData.avatar !== 'string' || userData.avatar.trim().length === 0)
   ) {
     errors.push({
       field: 'avatar',
@@ -156,8 +171,8 @@ export function validateUser(user: any): UserValidationResult {
   }
 
   if (
-    user.slackAccessToken !== undefined &&
-    (typeof user.slackAccessToken !== 'string' || user.slackAccessToken.trim().length === 0)
+    userData.slackAccessToken !== undefined &&
+    (typeof userData.slackAccessToken !== 'string' || userData.slackAccessToken.trim().length === 0)
   ) {
     errors.push({
       field: 'slackAccessToken',
@@ -166,8 +181,8 @@ export function validateUser(user: any): UserValidationResult {
   }
 
   if (
-    user.slackScope !== undefined &&
-    (typeof user.slackScope !== 'string' || user.slackScope.trim().length === 0)
+    userData.slackScope !== undefined &&
+    (typeof userData.slackScope !== 'string' || userData.slackScope.trim().length === 0)
   ) {
     errors.push({
       field: 'slackScope',
@@ -205,7 +220,7 @@ export function createUser(userData: Partial<User>): User {
 /**
  * Type guard to check if an object is a valid User
  */
-export function isUser(obj: any): obj is User {
+export function isUser(obj: unknown): obj is User {
   const result = validateUser(obj);
   return result.isValid;
 }

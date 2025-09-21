@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { AuthManager } from '../../../lib/auth-manager';
+import { getAuthManager } from '../../../lib/auth-manager';
 import { getSlackAuthUrl } from '../../../lib/slack';
 
 interface ErrorResponse {
@@ -25,7 +25,7 @@ export default async function handler(
   }
 
   try {
-    const authManager = new AuthManager();
+    const authManager = getAuthManager();
     const state = authManager.generateSlackOAuthState();
     const redirectUrl = getSlackAuthUrl(state);
 

@@ -1,7 +1,9 @@
 import type { NextApiResponse } from 'next';
-import { withAuth, AuthenticatedApiRequest } from '../../lib/auth-middleware';
-import { getSlackUsers, SlackUserInfo } from '../../lib/slack';
-import { AuthManager } from '../../lib/auth-manager';
+import { getAuthManager } from '../../lib/auth-manager';
+import type { AuthenticatedApiRequest } from '../../lib/auth-middleware';
+import { withAuth } from '../../lib/auth-middleware';
+import type { SlackUserInfo } from '../../lib/slack';
+import { getSlackUsers } from '../../lib/slack';
 
 interface ErrorResponse {
   error: string;
@@ -28,7 +30,7 @@ async function handler(
 
   try {
     const { uid } = req.user;
-    const authManager = new AuthManager();
+    const authManager = getAuthManager();
 
     // Get user profile to access Slack token
     const userProfile = await authManager.getUserProfile(uid);

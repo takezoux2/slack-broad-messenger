@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { FirebaseProvider } from '../components/providers/FirebaseProvider';
 import { AuthProvider } from '../components/providers/AuthProvider';
+import { FirebaseProvider } from '../components/providers/FirebaseProvider';
+import { getServerAuth } from '../lib/auth-server';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,16 +20,19 @@ export const metadata: Metadata = {
   description: 'Send messages to multiple Slack channels at once',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get server-side authentication state
+  const authResult = await getServerAuth();
+
   return (
     <html lang='en'>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <FirebaseProvider>
-          <AuthProvider>
+          <AuthProvider initialUser={authResult.user}>
             <div className='min-h-screen bg-gray-50'>
               <nav className='bg-white shadow-sm border-b'>
                 <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
