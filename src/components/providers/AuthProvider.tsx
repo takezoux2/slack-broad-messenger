@@ -12,7 +12,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   signOut: () => Promise<void>;
-  startSlackAuth: () => Promise<string>;
+  startGoogleAuth: () => Promise<string>;
   refreshUserProfile: () => Promise<void>;
 }
 
@@ -95,16 +95,24 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     }
   };
 
-  const startSlackAuth = async (): Promise<string> => {
-    // Make API call to get Slack OAuth URL
-    const response = await fetch('/api/auth/slack');
+  const startGoogleAuth = async (): Promise<string> => {
+    // Make API call to get Google OAuth URL
+    const response = await fetch('/api/auth/google/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        redirectUrl: window.location.pathname,
+      }),
+    });
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to start Slack authentication');
+      throw new Error(data.message || 'Failed to start Google authentication');
     }
 
-    return data.redirectUrl;
+    return data.authUrl;
   };
 
   const value: AuthContextType = {
@@ -113,7 +121,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     isLoading,
     isAuthenticated: !!user,
     signOut,
-    startSlackAuth,
+    startGoogleAuth,
     refreshUserProfile,
   };
 

@@ -1,7 +1,7 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, Firestore, connectFirestoreEmulator } from 'firebase/firestore';
-import { getFunctions, Functions, connectFunctionsEmulator } from 'firebase/functions';
+import { type FirebaseApp, getApps, initializeApp } from 'firebase/app';
+import { type Auth, connectAuthEmulator, GoogleAuthProvider, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, type Firestore, getFirestore } from 'firebase/firestore';
+import { connectFunctionsEmulator, type Functions, getFunctions } from 'firebase/functions';
 
 /**
  * Firebase configuration interface
@@ -253,6 +253,17 @@ export function getFirebaseApp(): FirebaseApp {
  */
 export function isEmulatorMode(): boolean {
   return defaultEnvConfig.useEmulator;
+}
+
+/**
+ * Gets the Google Auth provider for Firebase
+ */
+export function getGoogleAuthProvider(): GoogleAuthProvider {
+  const provider = new GoogleAuthProvider();
+  // Add additional scopes if needed
+  provider.addScope('email');
+  provider.addScope('profile');
+  return provider;
 }
 
 /**

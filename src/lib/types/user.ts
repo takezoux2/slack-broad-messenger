@@ -1,26 +1,65 @@
 import { Timestamp } from 'firebase/firestore';
 
 /**
+ * User preferences for customizing the application experience
+ */
+export interface UserPreferences {
+  /** Theme selection */
+  theme: 'light' | 'dark' | 'system';
+  /** Language preference */
+  language: string;
+  /** Timezone preference */
+  timezone: string;
+  /** Notification settings */
+  notifications: {
+    email: boolean;
+    push: boolean;
+    messageDelivery: boolean;
+    errorAlerts: boolean;
+  };
+}
+
+/**
+ * User account settings and configuration
+ */
+export interface UserSettings {
+  /** Default message sending settings */
+  defaultMessageSettings: {
+    sendImmediately: boolean;
+    confirmBeforeSend: boolean;
+    saveAsDraft: boolean;
+  };
+  /** Rate limiting preferences */
+  rateLimiting: {
+    messagesPerMinute: number;
+    maxConcurrentChannels: number;
+  };
+  /** Data retention settings */
+  dataRetention: {
+    keepSentMessages: boolean;
+    retentionPeriodDays: number;
+  };
+}
+
+/**
  * Represents the application user who creates channel lists and sends messages
  * Storage: Firebase Authentication + Firestore user profile
  */
 export interface User {
   /** Firebase Auth UID (primary key) */
   uid: string;
-  /** User email from Slack OAuth */
+  /** User email from Google OAuth */
   email: string;
-  /** Slack user ID */
-  slackUserId: string;
-  /** Display name from Slack */
+  /** Google user ID */
+  googleUserId: string;
+  /** Display name from Google */
   displayName: string;
   /** Profile picture URL */
   avatar?: string;
-  /** Slack workspace/team ID */
-  slackTeamId: string;
-  /** Slack access token for API calls */
-  slackAccessToken?: string;
-  /** Slack OAuth scope */
-  slackScope?: string;
+  /** User preferences */
+  preferences: UserPreferences;
+  /** User settings */
+  settings: UserSettings;
   /** Account creation time */
   createdAt: Timestamp;
   /** Last login timestamp */
@@ -74,6 +113,44 @@ function isValidDisplayName(displayName: string): boolean {
 }
 
 /**
+ * Creates default user preferences
+ */
+function createDefaultPreferences(): UserPreferences {
+  return {
+    theme: 'system',
+    language: 'en',
+    timezone: 'UTC',
+    notifications: {
+      email: true,
+      push: true,
+      messageDelivery: true,
+      errorAlerts: true,
+    },
+  };
+}
+
+/**
+ * Creates default user settings
+ */
+function createDefaultSettings(): UserSettings {
+  return {
+    defaultMessageSettings: {
+      sendImmediately: false,
+      confirmBeforeSend: true,
+      saveAsDraft: true,
+    },
+    rateLimiting: {
+      messagesPerMinute: 10,
+      maxConcurrentChannels: 50,
+    },
+    dataRetention: {
+      keepSentMessages: true,
+      retentionPeriodDays: 90,
+    },
+  };
+}
+
+/**
  * Validates a User object according to the data model rules
  */
 export function validateUser(user: unknown): UserValidationResult {
@@ -110,13 +187,13 @@ export function validateUser(user: unknown): UserValidationResult {
   }
 
   if (
-    !userData.slackUserId ||
-    typeof userData.slackUserId !== 'string' ||
-    userData.slackUserId.trim().length === 0
+    !userData.googleUserId ||
+    typeof userData.googleUserId !== 'string' ||
+    userData.googleUserId.trim().length === 0
   ) {
     errors.push({
-      field: 'slackUserId',
-      message: 'slackUserId is required and must be a non-empty string',
+      field: 'googleUserId',
+      message: 'googleUserId is required and must be a non-empty string',
     });
   }
 
@@ -124,17 +201,6 @@ export function validateUser(user: unknown): UserValidationResult {
     errors.push({
       field: 'displayName',
       message: 'displayName is required and must be 1-100 characters',
-    });
-  }
-
-  if (
-    !userData.slackTeamId ||
-    typeof userData.slackTeamId !== 'string' ||
-    userData.slackTeamId.trim().length === 0
-  ) {
-    errors.push({
-      field: 'slackTeamId',
-      message: 'slackTeamId is required and must be a non-empty string',
     });
   }
 
@@ -159,6 +225,22 @@ export function validateUser(user: unknown): UserValidationResult {
     });
   }
 
+  // Validate preferences object
+  if (!userData.preferences || typeof userData.preferences !== 'object') {
+    errors.push({
+      field: 'preferences',
+      message: 'preferences must be a valid object',
+    });
+  }
+
+  // Validate settings object
+  if (!userData.settings || typeof userData.settings !== 'object') {
+    errors.push({
+      field: 'settings',
+      message: 'settings must be a valid object',
+    });
+  }
+
   // Optional field validations
   if (
     userData.avatar !== undefined &&
@@ -167,26 +249,6 @@ export function validateUser(user: unknown): UserValidationResult {
     errors.push({
       field: 'avatar',
       message: 'avatar must be a non-empty string if provided',
-    });
-  }
-
-  if (
-    userData.slackAccessToken !== undefined &&
-    (typeof userData.slackAccessToken !== 'string' || userData.slackAccessToken.trim().length === 0)
-  ) {
-    errors.push({
-      field: 'slackAccessToken',
-      message: 'slackAccessToken must be a non-empty string if provided',
-    });
-  }
-
-  if (
-    userData.slackScope !== undefined &&
-    (typeof userData.slackScope !== 'string' || userData.slackScope.trim().length === 0)
-  ) {
-    errors.push({
-      field: 'slackScope',
-      message: 'slackScope must be a non-empty string if provided',
     });
   }
 
@@ -205,12 +267,11 @@ export function createUser(userData: Partial<User>): User {
   return {
     uid: userData.uid || '',
     email: userData.email || '',
-    slackUserId: userData.slackUserId || '',
+    googleUserId: userData.googleUserId || '',
     displayName: userData.displayName || '',
     avatar: userData.avatar,
-    slackTeamId: userData.slackTeamId || '',
-    slackAccessToken: userData.slackAccessToken,
-    slackScope: userData.slackScope,
+    preferences: userData.preferences || createDefaultPreferences(),
+    settings: userData.settings || createDefaultSettings(),
     createdAt: userData.createdAt || now,
     lastLoginAt: userData.lastLoginAt || now,
     isActive: userData.isActive ?? true,

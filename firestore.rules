@@ -64,12 +64,11 @@ service cloud.firestore {
       
       allow create: if isAuthenticated() &&
                        request.auth.uid == userId &&
-                       request.resource.data.keys().hasAll(['uid', 'email', 'slackUserId', 'displayName', 'slackTeamId', 'createdAt', 'lastLoginAt', 'isActive']) &&
+                       request.resource.data.keys().hasAll(['uid', 'email', 'googleUserId', 'displayName', 'createdAt', 'lastLoginAt', 'isActive']) &&
                        request.resource.data.uid == userId &&
                        request.resource.data.email is string &&
-                       request.resource.data.slackUserId is string &&
+                       request.resource.data.googleUserId is string &&
                        request.resource.data.displayName is string &&
-                       request.resource.data.slackTeamId is string &&
                        request.resource.data.createdAt is timestamp &&
                        request.resource.data.lastLoginAt is timestamp &&
                        request.resource.data.isActive is bool;
@@ -131,10 +130,10 @@ service cloud.firestore {
       allow write: if false; // Only system can write channel data
     }
     
-    // Slack users - read-only for all authenticated users in the same workspace
-    match /slackUsers/{slackUserId} {
+    // Google users - read-only for all authenticated users in the same workspace
+    match /googleUsers/{googleUserId} {
       allow read: if isAuthenticated();
-      allow write: if false; // Only system can write slack user data
+      allow write: if false; // Only system can write google user data
     }
 
     // Deny all other access

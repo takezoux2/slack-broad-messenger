@@ -1,38 +1,38 @@
 import {
   collection,
+  type DocumentSnapshot,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  query,
-  where,
-  orderBy,
   limit,
+  orderBy,
+  query,
+  setDoc,
   startAfter,
-  DocumentSnapshot,
   Timestamp,
+  updateDoc,
   WriteBatch,
+  where,
   writeBatch,
 } from 'firebase/firestore';
-import { getFirebaseFirestore } from './firebase';
 import { getAuthManager } from './auth-manager';
+import { getFirebaseFirestore } from './firebase';
+import { getSlackChannels, getSlackUsers, type SlackChannelInfo, SlackUserInfo } from './slack';
 import {
-  ChannelList,
-  createChannelList,
-  validateChannelList,
-  addChannelsToList,
-  removeChannelsFromList,
-  markChannelListAsUsed,
-} from './types/channel-list';
-import {
-  Channel,
+  type Channel,
   createChannel,
-  validateChannel,
   isChannelAvailableForMessaging,
+  validateChannel,
 } from './types/channel';
-import { getSlackChannels, getSlackUsers, SlackChannelInfo, SlackUserInfo } from './slack';
+import {
+  addChannelsToList,
+  type ChannelList,
+  createChannelList,
+  markChannelListAsUsed,
+  removeChannelsFromList,
+  validateChannelList,
+} from './types/channel-list';
 
 /**
  * Channel manager error types
@@ -97,7 +97,11 @@ export class ChannelManager {
   /**
    * Ensures user is authenticated and has Slack access
    */
-  private ensureAuthenticated(): { uid: string; teamId: string; accessToken: string } {
+  private ensureAuthenticated(): {
+    uid: string;
+    teamId: string;
+    accessToken: string;
+  } {
     const authState = this.authManager.getCurrentAuthState();
 
     if (!authState.isAuthenticated || !authState.user) {
@@ -107,17 +111,27 @@ export class ChannelManager {
       );
     }
 
-    if (!authState.userProfile?.slackAccessToken || !authState.userProfile?.slackTeamId) {
+    if (!authState.userProfile) {
       throw new ChannelManagerError(
         ChannelManagerErrorType.NOT_AUTHENTICATED,
-        'User must have valid Slack authentication'
+        'User must be authenticated with Google'
       );
     }
 
+    // TODO: For Google OAuth, we'll need to integrate with Slack via different means
+    // For now, this functionality is temporarily disabled during transition
+    // if (!authState.userProfile?.slackAccessToken || !authState.userProfile?.slackTeamId) {
+    //   throw new ChannelManagerError(
+    //     ChannelManagerErrorType.NOT_AUTHENTICATED,
+    //     'User must have valid Slack authentication'
+    //   );
+    // }
+
     return {
       uid: authState.user.uid,
-      teamId: authState.userProfile.slackTeamId,
-      accessToken: authState.userProfile.slackAccessToken,
+      // TODO: Slack integration will be added back later with proper connection to Google OAuth
+      teamId: 'temp-team-id', // authState.userProfile.slackTeamId,
+      accessToken: 'temp-access-token', // authState.userProfile.slackAccessToken,
     };
   }
 
@@ -244,7 +258,7 @@ export class ChannelManager {
     const { teamId } = this.ensureAuthenticated();
 
     try {
-      let channelsQuery = query(
+      const channelsQuery = query(
         collection(this.firestore, 'channels'),
         where('teamId', '==', teamId),
         orderBy('name')
@@ -285,7 +299,10 @@ export class ChannelManager {
    * Gets available channels for messaging (not deleted)
    */
   public async getAvailableChannels(): Promise<Channel[]> {
-    const channels = await this.getChannels({ includeArchived: true, includeDeleted: false });
+    const channels = await this.getChannels({
+      includeArchived: true,
+      includeDeleted: false,
+    });
     return channels.filter(isChannelAvailableForMessaging);
   }
 
@@ -470,7 +487,10 @@ export class ChannelManager {
         return null;
       }
 
-      const channelList = { id: listId, ...channelListSnap.data() } as ChannelList;
+      const channelList = {
+        id: listId,
+        ...channelListSnap.data(),
+      } as ChannelList;
 
       // Verify ownership
       if (channelList.ownerId !== uid) {

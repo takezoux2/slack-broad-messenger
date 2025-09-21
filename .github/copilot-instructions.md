@@ -1,12 +1,12 @@
 # Slack Broad Messenger - GitHub Copilot Context
 
-**Last updated**: September 9, 2025
-**Current Feature**: 001-build-an-app
+**Last updated**: September 21, 2025
+**Current Feature**: 002-login-using-only
 
 ## Active Technologies
 
-- TypeScript (latest stable) + Next.js 15+, React 18+, Firebase SDK, Slack SDK (001-build-an-app)
-- Firebase Firestore for application data, Firebase Authentication (001-build-an-app)
+- TypeScript (latest stable) + Next.js 15+, React 18+, Firebase SDK (002-login-using-only)
+- Firebase Firestore for application data, Firebase Authentication with Google OAuth (002-login-using-only)
 - Vitest with React Testing Library, Playwright for E2E (001-build-an-app)
 
 ## Project Structure
@@ -80,9 +80,9 @@ npm run dev:firebase  # Start Firebase emulator
 
 ## Recent Changes
 
+- 002-login-using-only: Replace Slack OAuth with Firebase Google authentication
 - 001-build-an-app: Added TypeScript + Next.js 15+, React 18+, Firebase SDK, Slack SDK
 - Initial project setup with Next.js and Firebase integration
-- Completed feature specification with all requirements resolved
 
 ## Progress Checklist
 

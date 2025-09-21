@@ -103,51 +103,38 @@ export async function getServerUserProfile(uid: string): Promise<User | null> {
 }
 
 /**
- * Checks if user has valid Slack token (server-side)
+ * Checks if user has valid Google authentication (server-side)
  */
-export async function serverHasValidSlackToken(uid: string): Promise<boolean> {
+export async function serverHasValidGoogleAuth(uid: string): Promise<boolean> {
   try {
     const userProfile = await getServerUserProfile(uid);
-    return !!userProfile?.slackAccessToken;
+    return !!userProfile?.googleUserId;
   } catch (error) {
-    console.error('Server Slack token validation failed:', error);
+    console.error('Server Google auth validation failed:', error);
     return false;
   }
 }
 
 /**
- * Gets user's Slack access token (server-side)
+ * Gets user's Google user ID (server-side)
  */
-export async function getServerSlackAccessToken(uid: string): Promise<string | null> {
+export async function getServerGoogleUserId(uid: string): Promise<string | null> {
   try {
     const userProfile = await getServerUserProfile(uid);
-    return userProfile?.slackAccessToken || null;
+    return userProfile?.googleUserId || null;
   } catch (error) {
-    console.error('Failed to get Slack access token from server:', error);
+    console.error('Failed to get Google user ID from server:', error);
     return null;
   }
 }
 
 /**
- * Gets user's Slack team ID (server-side)
- */
-export async function getServerSlackTeamId(uid: string): Promise<string | null> {
-  try {
-    const userProfile = await getServerUserProfile(uid);
-    return userProfile?.slackTeamId || null;
-  } catch (error) {
-    console.error('Failed to get Slack team ID from server:', error);
-    return null;
-  }
-}
-
-/**
- * Checks if user is fully authenticated with Slack (server-side)
+ * Checks if user is fully authenticated with Google (server-side)
  */
 export async function serverIsFullyAuthenticated(uid: string): Promise<boolean> {
   try {
     const userProfile = await getServerUserProfile(uid);
-    return !!(userProfile?.slackAccessToken && userProfile?.slackTeamId);
+    return !!userProfile?.googleUserId;
   } catch (error) {
     console.error('Server full authentication check failed:', error);
     return false;
