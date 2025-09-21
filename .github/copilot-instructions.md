@@ -1,7 +1,7 @@
 # Slack Broad Messenger - GitHub Copilot Context
 
 **Last updated**: September 21, 2025
-**Current Feature**: 002-login-using-only
+**Current Feature**: 003-change-next-js
 
 ## Active Technologies
 
@@ -80,9 +80,9 @@ npm run dev:firebase  # Start Firebase emulator
 
 ## Recent Changes
 
+- 003-change-next-js: Migrate API routes from Pages Router to App Router architecture
 - 002-login-using-only: Replace Slack OAuth with Firebase Google authentication
 - 001-build-an-app: Added TypeScript + Next.js 15+, React 18+, Firebase SDK, Slack SDK
-- Initial project setup with Next.js and Firebase integration
 
 ## Progress Checklist
 
