@@ -1,45 +1,45 @@
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
-  setDoc,
-  updateDoc,
-  addDoc,
-  query,
-  where,
-  orderBy,
   getDocs,
-  writeBatch,
   onSnapshot,
+  orderBy,
+  query,
+  setDoc,
   Timestamp,
-  Unsubscribe,
+  type Unsubscribe,
+  updateDoc,
+  where,
+  writeBatch,
 } from 'firebase/firestore';
-import { getFirebaseFirestore } from './firebase';
 import { getAuthManager } from './auth-manager';
 import { getChannelManager } from './channel-manager';
+import { getFirebaseFirestore } from './firebase';
+import { postSlackMessage, SlackMessageResult } from './slack';
+import type { Channel } from './types/channel';
+import { ChannelList } from './types/channel-list';
 import {
-  Message,
-  MessageStatus,
-  createMessage,
-  validateMessage,
-  startMessageSending,
-  completeMessage,
-  failMessage,
   calculateMessageProgress,
+  completeMessage,
+  createMessage,
+  failMessage,
+  type Message,
+  MessageStatus,
+  startMessageSending,
+  validateMessage,
 } from './types/message';
 import {
-  MessageDelivery,
-  DeliveryStatus,
   createMessageDelivery,
-  markDeliverySuccess,
+  DeliveryStatus,
+  incrementRetryCount,
+  type MessageDelivery,
   markDeliveryFailed,
   markDeliverySkipped,
-  incrementRetryCount,
+  markDeliverySuccess,
   startDeliveryAttempt,
 } from './types/message-delivery';
-import { ChannelList } from './types/channel-list';
-import { Channel } from './types/channel';
-import { postSlackMessage, SlackMessageResult } from './slack';
 
 /**
  * Message sender error types
@@ -125,7 +125,11 @@ export class MessageSender {
   /**
    * Ensures user is authenticated and has Slack access
    */
-  private ensureAuthenticated(): { uid: string; teamId: string; accessToken: string } {
+  private ensureAuthenticated(): {
+    uid: string;
+    teamId: string;
+    accessToken: string;
+  } {
     const authState = this.authManager.getCurrentAuthState();
 
     if (!authState.isAuthenticated || !authState.user) {
@@ -135,17 +139,27 @@ export class MessageSender {
       );
     }
 
-    if (!authState.userProfile?.slackAccessToken || !authState.userProfile?.slackTeamId) {
+    if (!authState.userProfile) {
       throw new MessageSenderError(
         MessageSenderErrorType.NOT_AUTHENTICATED,
-        'User must have valid Slack authentication'
+        'User must be authenticated with Google'
       );
     }
 
+    // TODO: For Google OAuth, we'll need to integrate with Slack via different means
+    // For now, this functionality is temporarily disabled during transition
+    // if (!authState.userProfile?.slackAccessToken || !authState.userProfile?.slackTeamId) {
+    //   throw new MessageSenderError(
+    //     MessageSenderErrorType.NOT_AUTHENTICATED,
+    //     'User must have valid Slack authentication'
+    //   );
+    // }
+
     return {
       uid: authState.user.uid,
-      teamId: authState.userProfile.slackTeamId,
-      accessToken: authState.userProfile.slackAccessToken,
+      // TODO: Slack integration will be added back later with proper connection to Google OAuth
+      teamId: 'temp-team-id', // authState.userProfile.slackTeamId,
+      accessToken: 'temp-access-token', // authState.userProfile.slackAccessToken,
     };
   }
 
@@ -425,7 +439,7 @@ export class MessageSender {
           // Increment retry count and wait before next attempt
           currentDelivery = incrementRetryCount(currentDelivery);
           await this.updateDelivery(currentDelivery);
-          await this.delay(retryDelay * Math.pow(2, attempt)); // Exponential backoff
+          await this.delay(retryDelay * 2 ** attempt); // Exponential backoff
         } else {
           // Mark as failed
           const failedDelivery = markDeliveryFailed(currentDelivery, errorCode, errorMessage);

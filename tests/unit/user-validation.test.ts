@@ -10,13 +10,38 @@ describe('User Type and Validation', () => {
   const validUserData: User = {
     uid: 'firebase-auth-uid-123',
     email: 'test@example.com',
-    slackUserId: 'U1234567890',
+    googleUserId: 'google-user-123',
     displayName: 'Test User',
     avatar: 'https://example.com/avatar.jpg',
-    slackTeamId: 'T1234567890',
     createdAt: Timestamp.fromDate(new Date('2024-01-01T00:00:00Z')),
     lastLoginAt: Timestamp.fromDate(new Date('2024-01-02T00:00:00Z')),
     isActive: true,
+    preferences: {
+      language: 'en',
+      timezone: 'UTC',
+      theme: 'system',
+      notifications: {
+        email: true,
+        push: true,
+        messageDelivery: true,
+        errorAlerts: true,
+      },
+    },
+    settings: {
+      defaultMessageSettings: {
+        confirmBeforeSend: true,
+        saveAsDraft: true,
+        sendImmediately: false,
+      },
+      rateLimiting: {
+        messagesPerMinute: 10,
+        maxConcurrentChannels: 50,
+      },
+      dataRetention: {
+        keepSentMessages: true,
+        retentionPeriodDays: 90,
+      },
+    },
   };
 
   describe('validateUser', () => {
@@ -44,14 +69,14 @@ describe('User Type and Validation', () => {
       expect(result.errors[0].message).toBe('email must be a valid email format');
     });
 
-    it('should return validation error for missing slackUserId', () => {
-      const { slackUserId: _slackUserId, ...invalidUser } = validUserData;
+    it('should return validation error for missing googleUserId', () => {
+      const { googleUserId: _googleUserId, ...invalidUser } = validUserData;
       const result = validateUser(invalidUser);
       expect(result.isValid).toBe(false);
       expect(result.errors).toHaveLength(1);
-      expect(result.errors[0].field).toBe('slackUserId');
+      expect(result.errors[0].field).toBe('googleUserId');
       expect(result.errors[0].message).toBe(
-        'slackUserId is required and must be a non-empty string'
+        'googleUserId is required and must be a non-empty string'
       );
     });
 
@@ -76,15 +101,16 @@ describe('User Type and Validation', () => {
       expect(result.errors[0].message).toBe('displayName is required and must be 1-100 characters');
     });
 
-    it('should return validation error for missing slackTeamId', () => {
-      const { slackTeamId: _slackTeamId, ...invalidUser } = validUserData;
+    it('should return validation error for invalid preferences', () => {
+      const invalidUser = {
+        ...validUserData,
+        preferences: 'invalid' as unknown as typeof validUserData.preferences,
+      };
       const result = validateUser(invalidUser);
       expect(result.isValid).toBe(false);
       expect(result.errors).toHaveLength(1);
-      expect(result.errors[0].field).toBe('slackTeamId');
-      expect(result.errors[0].message).toBe(
-        'slackTeamId is required and must be a non-empty string'
-      );
+      expect(result.errors[0].field).toBe('preferences');
+      expect(result.errors[0].message).toBe('preferences must be a valid object');
     });
 
     it('should return validation error for invalid createdAt', () => {
@@ -151,13 +177,14 @@ describe('User Type and Validation', () => {
       const user = createUser(partialUserData);
       expect(user.uid).toBe('');
       expect(user.email).toBe(validUserData.email);
-      expect(user.slackUserId).toBe(validUserData.slackUserId);
+      expect(user.googleUserId).toBe(validUserData.googleUserId);
       expect(user.displayName).toBe(validUserData.displayName);
       expect(user.avatar).toBe(validUserData.avatar);
-      expect(user.slackTeamId).toBe(validUserData.slackTeamId);
       expect(user.isActive).toBe(true);
       expect(user.createdAt).toBeInstanceOf(Timestamp);
       expect(user.lastLoginAt).toBeInstanceOf(Timestamp);
+      expect(user.preferences).toBeDefined();
+      expect(user.settings).toBeDefined();
     });
   });
 

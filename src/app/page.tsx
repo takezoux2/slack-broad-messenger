@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useAuth } from '../components/providers/AuthProvider';
+import { useState } from 'react';
 import { ChannelList } from '../components/ChannelList';
-import { MessageComposer } from '../components/MessageComposer';
 import { DeliveryReport } from '../components/DeliveryReport';
+import { MessageComposer } from '../components/MessageComposer';
+import { useAuth } from '../components/providers/AuthProvider';
 
 export default function Dashboard() {
-  const { user, userProfile, isLoading, isAuthenticated, startSlackAuth } = useAuth();
+  const { userProfile, isLoading, isAuthenticated, startGoogleAuth } = useAuth();
   const [selectedChannelListId, setSelectedChannelListId] = useState<string | null>(null);
   const [currentMessageId, setCurrentMessageId] = useState<string | null>(null);
 
@@ -32,22 +32,22 @@ export default function Dashboard() {
             Welcome to Slack Broad Messenger
           </h2>
           <p className='text-gray-600 mb-6'>
-            Send messages to multiple Slack channels at once. Connect your Slack workspace to get
-            started.
+            Send messages to multiple Slack channels at once. Sign in with Google to get started.
           </p>
           <button
+            type='button'
             onClick={async () => {
               try {
-                const authUrl = await startSlackAuth();
+                const authUrl = await startGoogleAuth();
                 window.location.href = authUrl;
               } catch (error) {
-                console.error('Failed to start Slack auth:', error);
+                console.error('Failed to start Google auth:', error);
                 alert('Failed to start authentication. Please try again.');
               }
             }}
             className='w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors'
           >
-            Connect with Slack
+            Sign in with Google
           </button>
         </div>
       </div>
@@ -64,7 +64,10 @@ export default function Dashboard() {
             <h1 className='text-2xl font-bold text-gray-900'>Dashboard</h1>
             <p className='text-gray-600'>Welcome back, {userProfile.displayName}</p>
           </div>
-          <div className='text-sm text-gray-500'>Team: {userProfile.slackTeamId}</div>
+          <div className='text-sm text-gray-500'>
+            <div>Email: {userProfile.email}</div>
+            <div>Google ID: {userProfile.googleUserId}</div>
+          </div>
         </div>
       </div>
 

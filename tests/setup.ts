@@ -1,4 +1,9 @@
+import { config } from 'dotenv';
+import path from 'path';
 import { afterAll, beforeAll } from 'vitest';
+
+// Load test environment variables
+config({ path: path.join(__dirname, '.env.test') });
 
 // Test client for API contract testing
 export interface TestResponse {
@@ -46,11 +51,10 @@ async function makeRequest(_method: string, _path: string, _data?: unknown): Pro
 // Global test setup
 beforeAll(async () => {
   // Setup test environment - use Object.assign to avoid readonly issue
-  Object.assign(process.env, { NODE_ENV: 'test' });
-});
-
-afterAll(async () => {
-  // Cleanup test environment
+  Object.assign(process.env, {
+    NODE_ENV: 'test',
+    NEXT_PUBLIC_FIREBASE_USE_EMULATOR: 'true',
+  });
 });
 
 afterAll(async () => {

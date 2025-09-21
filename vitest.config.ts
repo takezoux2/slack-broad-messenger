@@ -8,6 +8,17 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
+    env: {
+      NEXT_PUBLIC_FIREBASE_API_KEY: 'test-api-key',
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: 'test-project.firebaseapp.com',
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: 'test-project',
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: 'test-project.appspot.com',
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: '123456789',
+      NEXT_PUBLIC_FIREBASE_APP_ID: '1:123456789:web:test-app-id',
+      NEXT_PUBLIC_FIREBASE_USE_EMULATOR: 'true',
+      GOOGLE_CLIENT_ID: 'test-google-client-id',
+      GOOGLE_CLIENT_SECRET: 'test-google-client-secret',
+    },
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [
       '**/node_modules/**',

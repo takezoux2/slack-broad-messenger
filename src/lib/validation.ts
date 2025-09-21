@@ -4,10 +4,10 @@
  */
 
 import { Timestamp } from 'firebase/firestore';
-import { User } from './types/user';
 import { ChannelList } from './types/channel-list';
 import { Message, MessageStatus } from './types/message';
-import { MessageDelivery, DeliveryStatus } from './types/message-delivery';
+import { DeliveryStatus, MessageDelivery } from './types/message-delivery';
+import { User } from './types/user';
 
 export interface ValidationError {
   field: string;
@@ -111,52 +111,55 @@ export function validateUser(user: any): ValidationResult {
   if (!user.uid || typeof user.uid !== 'string' || user.uid.trim() === '') {
     errors.push({
       field: 'uid',
-      message: 'User ID is required and must be a non-empty string',
+      message: 'uid must be a valid Firebase Auth UID',
     });
   }
 
   if (!user.email || typeof user.email !== 'string' || !isValidEmail(user.email)) {
     errors.push({
       field: 'email',
-      message: 'Valid email address is required',
+      message: 'email must be a valid email format',
     });
   }
 
   if (
-    !user.slackUserId ||
-    typeof user.slackUserId !== 'string' ||
-    !isValidSlackUserId(user.slackUserId)
+    !user.googleUserId ||
+    typeof user.googleUserId !== 'string' ||
+    user.googleUserId.trim() === ''
   ) {
     errors.push({
-      field: 'slackUserId',
-      message: 'Valid Slack user ID is required',
+      field: 'googleUserId',
+      message: 'googleUserId is required and must be a non-empty string',
     });
   }
 
   if (!user.displayName || typeof user.displayName !== 'string' || user.displayName.trim() === '') {
     errors.push({
       field: 'displayName',
-      message: 'Display name is required and must be a non-empty string',
+      message: 'displayName is required and must be 1-100 characters',
     });
   } else if (user.displayName.length > 100) {
     errors.push({
       field: 'displayName',
-      message: 'Display name must not exceed 100 characters',
-    });
-  }
-
-  if (!user.slackTeamId || typeof user.slackTeamId !== 'string' || user.slackTeamId.trim() === '') {
-    errors.push({
-      field: 'slackTeamId',
-      message: 'Slack team ID is required',
+      message: 'displayName is required and must be 1-100 characters',
     });
   }
 
   if (typeof user.isActive !== 'boolean') {
     errors.push({
       field: 'isActive',
-      message: 'isActive must be a boolean',
+      message: 'isActive must be a boolean value',
     });
+  }
+
+  // Optional avatar validation
+  if (user.avatar !== undefined) {
+    if (typeof user.avatar !== 'string' || user.avatar.trim() === '') {
+      errors.push({
+        field: 'avatar',
+        message: 'avatar must be a non-empty string if provided',
+      });
+    }
   }
 
   // Timestamp validations
@@ -171,6 +174,22 @@ export function validateUser(user: any): ValidationResult {
     errors.push({
       field: 'lastLoginAt',
       message: 'lastLoginAt must be a Firebase Timestamp',
+    });
+  }
+
+  // Preferences validation
+  if (user.preferences && typeof user.preferences !== 'object') {
+    errors.push({
+      field: 'preferences',
+      message: 'preferences must be a valid object',
+    });
+  }
+
+  // Settings validation
+  if (user.settings && typeof user.settings !== 'object') {
+    errors.push({
+      field: 'settings',
+      message: 'settings must be a valid object',
     });
   }
 

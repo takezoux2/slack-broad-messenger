@@ -5,23 +5,23 @@
 
 ## Phase 3.1: Setup
 
-- [ ] T001 Verify Firebase project has Google authentication provider enabled
-- [ ] T002 [P] Update Firebase configuration in src/lib/firebase.ts for Google OAuth
-- [ ] T003 [P] Configure Firebase emulator for Google auth testing
+- [x] T001 Verify Firebase project has Google authentication provider enabled
+- [x] T002 [P] Update Firebase configuration in src/lib/firebase.ts for Google OAuth
+- [x] T003 [P] Configure Firebase emulator for Google auth testing
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
 
-- [ ] T004 [P] Contract test POST /api/auth/google/signin in tests/contract/auth-google-signin-post.test.ts
-- [ ] T005 [P] Contract test GET /api/auth/google/callback in tests/contract/auth-google-callback-get.test.ts
-- [ ] T006 [P] Contract test GET /api/auth/profile in tests/contract/auth-profile-get.test.ts
-- [ ] T007 [P] Contract test PUT /api/auth/profile in tests/contract/auth-profile-put.test.ts
-- [ ] T008 [P] Contract test POST /api/auth/signout in tests/contract/auth-signout-post.test.ts
-- [ ] T009 [P] Integration test Google auth flow in tests/integration/google-auth-flow.test.ts
-- [ ] T010 [P] Integration test user profile management in tests/integration/user-profile-management.test.ts
-- [ ] T011 [P] E2E test Google authentication flow in tests/e2e/google-auth-flow.spec.ts
-- [ ] T012 [P] E2E test authentication error scenarios in tests/e2e/auth-error-scenarios.spec.ts
+- [x] T004 [P] Contract test POST /api/auth/google/signin in tests/contract/auth-google-signin-post.test.ts
+- [x] T005 [P] Contract test GET /api/auth/google/callback in tests/contract/auth-google-callback-get.test.ts
+- [x] T006 [P] Contract test GET /api/auth/profile in tests/contract/auth-profile-get.test.ts
+- [x] T007 [P] Contract test PUT /api/auth/profile in tests/contract/auth-profile-put.test.ts
+- [x] T008 [P] Contract test POST /api/auth/signout in tests/contract/auth-signout-post.test.ts
+- [x] T009 [P] Integration test Google auth flow in tests/integration/google-auth-flow.test.ts
+- [x] T010 [P] Integration test user profile management in tests/integration/user-profile-management.test.ts
+- [x] T011 [P] E2E test Google authentication flow in tests/e2e/google-auth-flow.spec.ts
+- [x] T012 [P] E2E test authentication error scenarios in tests/e2e/auth-error-scenarios.spec.ts
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
 

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect } from 'react';
 import { useAuth } from '../../components/providers/AuthProvider';
 
 export default function AuthPage() {
@@ -16,26 +16,28 @@ export default function AuthPage() {
       return;
     }
 
-    // Handle OAuth callback
-    const code = searchParams.get('code');
-    const state = searchParams.get('state');
-    const error = searchParams.get('error');
+    // Handle OAuth callback if search params exist
+    if (searchParams) {
+      const code = searchParams.get('code');
+      const state = searchParams.get('state');
+      const error = searchParams.get('error');
 
-    if (error) {
-      console.error('OAuth error:', error);
-      // Handle OAuth error - could show an error message or redirect
-      return;
-    }
+      if (error) {
+        console.error('OAuth error:', error);
+        // Handle OAuth error - could show an error message or redirect
+        return;
+      }
 
-    if (code && state) {
-      // Handle OAuth callback
-      handleOAuthCallback(code, state);
+      if (code && state) {
+        // Handle Google OAuth callback
+        handleOAuthCallback(code, state);
+      }
     }
   }, [isLoading, isAuthenticated, searchParams, router]);
 
   const handleOAuthCallback = async (code: string, state: string) => {
     try {
-      const response = await fetch(`/api/auth/slack/callback?code=${code}&state=${state}`);
+      const response = await fetch(`/api/auth/google/callback?code=${code}&state=${state}`);
       const data = await response.json();
 
       if (response.ok) {
@@ -66,7 +68,7 @@ export default function AuthPage() {
     <div className='max-w-md mx-auto text-center'>
       <div className='bg-white shadow-sm rounded-lg p-8'>
         <h2 className='text-2xl font-bold text-gray-900 mb-4'>Authentication</h2>
-        <p className='text-gray-600'>Processing your Slack authentication...</p>
+        <p className='text-gray-600'>Processing your Google authentication...</p>
       </div>
     </div>
   );

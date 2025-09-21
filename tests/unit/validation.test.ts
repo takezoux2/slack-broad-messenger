@@ -1,16 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { Timestamp } from 'firebase/firestore';
+import { describe, expect, it } from 'vitest';
 import {
-  validateUser,
-  validateChannelList,
-  validateMessage,
-  validateMessageDelivery,
   isValidEmail,
   isValidSlackChannelId,
   isValidSlackUserId,
   sanitizeChannelName,
+  validateChannelList,
+  validateMessage,
   validateMessageContent,
-} from '../../../src/lib/validation';
-import { Timestamp } from 'firebase/firestore';
+  validateMessageDelivery,
+  validateUser,
+} from '../../src/lib/validation';
 
 /**
  * Unit tests for validation functions
@@ -176,7 +176,11 @@ describe('Channel List Validation', () => {
 
   it('should reject channel list with too many channels', () => {
     const tooManyChannels = Array(101).fill('C1234567890');
-    const invalidList = { ...validChannelList, channelIds: tooManyChannels, channelCount: 101 };
+    const invalidList = {
+      ...validChannelList,
+      channelIds: tooManyChannels,
+      channelCount: 101,
+    };
     const result = validateChannelList(invalidList);
     expect(result.isValid).toBe(false);
     expect(result.errors.some(e => e.field === 'channelIds')).toBe(true);
@@ -190,7 +194,10 @@ describe('Channel List Validation', () => {
   });
 
   it('should reject channel list with invalid channel IDs', () => {
-    const invalidList = { ...validChannelList, channelIds: ['invalid-id', 'C1234567890'] };
+    const invalidList = {
+      ...validChannelList,
+      channelIds: ['invalid-id', 'C1234567890'],
+    };
     const result = validateChannelList(invalidList);
     expect(result.isValid).toBe(false);
     expect(result.errors.some(e => e.field === 'channelIds')).toBe(true);
@@ -277,7 +284,10 @@ describe('Message Delivery Validation', () => {
   });
 
   it('should reject delivery with invalid status', () => {
-    const invalidDelivery = { ...validDelivery, status: 'invalid-status' as any };
+    const invalidDelivery = {
+      ...validDelivery,
+      status: 'invalid-status' as any,
+    };
     const result = validateMessageDelivery(invalidDelivery);
     expect(result.isValid).toBe(false);
     expect(result.errors.some(e => e.field === 'status')).toBe(true);
@@ -367,7 +377,11 @@ describe('Edge Cases and Boundary Testing', () => {
 
     // Over maximum channels (101)
     const tooManyChannels = Array(101).fill('C1234567890');
-    const invalidList = { ...validList, channelIds: tooManyChannels, channelCount: 101 };
+    const invalidList = {
+      ...validList,
+      channelIds: tooManyChannels,
+      channelCount: 101,
+    };
     expect(validateChannelList(invalidList).isValid).toBe(false);
   });
 
