@@ -1,6 +1,8 @@
+import { getApps, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import { type NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // App Router middleware implementation for authentication
   const { pathname } = request.nextUrl;
 
@@ -14,13 +16,33 @@ export function middleware(request: NextRequest) {
   }
 
   // For non-API routes, check if user is authenticated via cookies
-  if (!pathname.startsWith('/api/')) {
-    const sessionCookie = request.cookies.get('session-token');
+  if (pathname.startsWith('/api/')) {
+    const sessionCookie = request.cookies.get('session');
 
     if (!sessionCookie && pathname !== '/auth') {
       // Redirect to auth page if not authenticated
       const url = new URL('/auth', request.url);
       return NextResponse.redirect(url);
+    }
+
+    // If we have a session cookie, verify it
+    if (sessionCookie) {
+      try {
+        // Initialize Firebase Admin SDK if not already initialized
+        if (getApps().length === 0) {
+          initializeApp();
+        }
+
+        const auth = getAuth();
+        await auth.verifySessionCookie(sessionCookie.value, true);
+
+        // Session is valid, continue with the request
+        return NextResponse.next();
+      } catch (_error) {
+        // Invalid session, redirect to auth page (top page)
+        const url = new URL('/auth', request.url);
+        return NextResponse.redirect(url);
+      }
     }
 
     return NextResponse.next();

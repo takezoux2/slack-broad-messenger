@@ -1,13 +1,15 @@
 'use client';
 
+import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { useState } from 'react';
+import { getFirebaseApp, getFirebaseAuth } from '@/lib/firebase';
 import { ChannelList } from '../components/ChannelList';
 import { DeliveryReport } from '../components/DeliveryReport';
 import { MessageComposer } from '../components/MessageComposer';
 import { useAuth } from '../components/providers/AuthProvider';
 
 export default function Dashboard() {
-  const { userProfile, isLoading, isAuthenticated, startGoogleAuth } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   const [selectedChannelListId, setSelectedChannelListId] = useState<string | null>(null);
   const [currentMessageId, setCurrentMessageId] = useState<string | null>(null);
 
@@ -23,37 +25,6 @@ export default function Dashboard() {
     );
   }
 
-  // Not authenticated - show login
-  if (!isAuthenticated || !userProfile) {
-    return (
-      <div className='max-w-md mx-auto text-center'>
-        <div className='bg-white shadow-sm rounded-lg p-8'>
-          <h2 className='text-2xl font-bold text-gray-900 mb-4'>
-            Welcome to Slack Broad Messenger
-          </h2>
-          <p className='text-gray-600 mb-6'>
-            Send messages to multiple Slack channels at once. Sign in with Google to get started.
-          </p>
-          <button
-            type='button'
-            onClick={async () => {
-              try {
-                const authUrl = await startGoogleAuth();
-                window.location.href = authUrl;
-              } catch (error) {
-                console.error('Failed to start Google auth:', error);
-                alert('Failed to start authentication. Please try again.');
-              }
-            }}
-            className='w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors'
-          >
-            Sign in with Google
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // Authenticated dashboard
   return (
     <div className='space-y-8'>
@@ -62,11 +33,34 @@ export default function Dashboard() {
         <div className='flex items-center justify-between'>
           <div>
             <h1 className='text-2xl font-bold text-gray-900'>Dashboard</h1>
-            <p className='text-gray-600'>Welcome back, {userProfile.displayName}</p>
+            <p className='text-gray-600'>Welcome back, {user?.displayName}</p>
           </div>
-          <div className='text-sm text-gray-500'>
-            <div>Email: {userProfile.email}</div>
-            <div>Google ID: {userProfile.googleUserId}</div>
+          <div className='flex items-center gap-4'>
+            <div className='text-sm text-gray-500'>
+              <div>Email: {user?.email}</div>
+              <div>Google ID: {user?.uid}</div>
+            </div>
+            <button
+              type='button'
+              onClick={async () => {
+                try {
+                  await fetch('/api/auth/signout', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  });
+                  getFirebaseAuth().signOut();
+                  // Reload the page to refresh the authentication state
+                  window.location.reload();
+                } catch (error) {
+                  console.error('Sign out error:', error);
+                }
+              }}
+              className='bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors text-sm'
+            >
+              Sign Out
+            </button>
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ describe('Contract: GET /api/channel-lists', () => {
   });
 
   it('should return list of channel lists for authenticated user', async () => {
-    const response = await testClient.get('/api/channel-lists');
+    const response = await testClient.get('/api/channel-lists', { authenticated: true });
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(
@@ -43,7 +43,7 @@ describe('Contract: GET /api/channel-lists', () => {
   });
 
   it('should return empty array when user has no channel lists', async () => {
-    const response = await testClient.get('/api/channel-lists');
+    const response = await testClient.get('/api/channel-lists', { authenticated: true });
 
     if (response.status === 200) {
       expect(response.body).toEqual(
@@ -55,7 +55,7 @@ describe('Contract: GET /api/channel-lists', () => {
   });
 
   it('should include channel details in each list', async () => {
-    const response = await testClient.get('/api/channel-lists');
+    const response = await testClient.get('/api/channel-lists', { authenticated: true });
 
     if (response.status === 200) {
       const body = response.body as {
@@ -77,7 +77,7 @@ describe('Contract: GET /api/channel-lists', () => {
   });
 
   it('should support pagination with cursor', async () => {
-    const response = await testClient.get('/api/channel-lists?limit=5');
+    const response = await testClient.get('/api/channel-lists?limit=5', { authenticated: true });
 
     if (response.status === 200) {
       expect(response.body).toEqual(

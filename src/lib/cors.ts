@@ -11,7 +11,11 @@ export interface CorsOptions {
 }
 
 const defaultCorsOptions: CorsOptions = {
-  origin: ['http://localhost:3000', 'https://slack-broad-messenger.vercel.app'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://slack-broad-messenger.vercel.app',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,

@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 // Request validation schema
 const SigninRequestSchema = z.object({
-  redirectUrl: z.string().url().optional(),
+  redirectUrl: z.string().optional(),
 });
 
 /**
@@ -29,8 +29,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
       validatedData = SigninRequestSchema.parse(requestBody);
     } catch {
+      console.warn('Validation error:', requestBody);
       return NextResponse.json(
-        { error: 'VALIDATION_ERROR', message: 'Invalid request data format' },
+        {
+          error: 'VALIDATION_ERROR',
+          message: `Invalid request data format
+          ${JSON.stringify(requestBody, null, 2)}`,
+        },
         { status: 422 }
       );
     }

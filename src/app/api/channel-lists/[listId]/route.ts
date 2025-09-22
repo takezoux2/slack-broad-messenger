@@ -138,7 +138,7 @@ export async function GET(
     if (error instanceof Error && error.message === 'missing_token') {
       return NextResponse.json(
         {
-          error: 'missing_token',
+          error: 'authentication_required',
           message: 'Authorization token is required',
         },
         { status: 401 }
@@ -238,7 +238,7 @@ export async function PUT(
     if (error instanceof Error && error.message === 'missing_token') {
       return NextResponse.json(
         {
-          error: 'missing_token',
+          error: 'authentication_required',
           message: 'Authorization token is required',
         },
         { status: 401 }
@@ -335,7 +335,7 @@ export async function DELETE(
     if (error instanceof Error && error.message === 'missing_token') {
       return NextResponse.json(
         {
-          error: 'missing_token',
+          error: 'authentication_required',
           message: 'Authorization token is required',
         },
         { status: 401 }

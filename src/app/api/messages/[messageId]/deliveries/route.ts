@@ -119,7 +119,7 @@ export async function GET(
     if (error instanceof Error && error.message === 'missing_token') {
       return NextResponse.json(
         {
-          error: 'missing_token',
+          error: 'authentication_required',
           message: 'Authorization token is required',
         },
         { status: 401 }

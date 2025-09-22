@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { AuthManager } from '../../../../lib/auth-manager';
+import { createSecureResponse, handleCorsPreflightRequest } from '../../../../lib/cors';
 import type { User } from '../../../../lib/types/user';
 
 // Request validation schema for PUT requests
@@ -51,6 +52,14 @@ const ProfileUpdateRequestSchema = z.object({
 const authManager = new AuthManager();
 
 /**
+ * OPTIONS /api/auth/profile
+ * Handles CORS preflight requests
+ */
+export async function OPTIONS(): Promise<NextResponse> {
+  return handleCorsPreflightRequest();
+}
+
+/**
  * GET /api/auth/profile
  * Returns the current user's profile
  */
@@ -60,8 +69,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
 
     if (!authHeader) {
-      return NextResponse.json(
-        { error: 'UNAUTHORIZED', message: 'Authorization header is required' },
+      return createSecureResponse(
+        { error: 'authentication_required', message: 'Authorization header is required' },
         { status: 401 }
       );
     }
@@ -82,7 +91,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     if (!token) {
       return NextResponse.json(
-        { error: 'MISSING_TOKEN', message: 'Firebase token is required' },
+        { error: 'authentication_required', message: 'Firebase token is required' },
         { status: 401 }
       );
     }
@@ -127,7 +136,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     // Return the user profile with proper formatting
-    return NextResponse.json({
+    return createSecureResponse({
       uid: userProfile.uid,
       email: userProfile.email,
       displayName: userProfile.displayName,
@@ -180,7 +189,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
 
     if (!token) {
       return NextResponse.json(
-        { error: 'MISSING_TOKEN', message: 'Firebase token is required' },
+        { error: 'authentication_required', message: 'Firebase token is required' },
         { status: 401 }
       );
     }

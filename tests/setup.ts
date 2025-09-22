@@ -12,49 +12,68 @@ export interface TestResponse {
   body: unknown;
 }
 
-export interface TestClient {
-  get(path: string): Promise<TestResponse>;
-  post(path: string, data?: unknown): Promise<TestResponse>;
-  put(path: string, data?: unknown): Promise<TestResponse>;
-  delete(path: string): Promise<TestResponse>;
+export interface TestClientOptions {
+  authenticated?: boolean;
+  authToken?: string;
 }
+
+export interface TestClient {
+  get(path: string, options?: TestClientOptions): Promise<TestResponse>;
+  post(path: string, data?: unknown, options?: TestClientOptions): Promise<TestResponse>;
+  put(path: string, data?: unknown, options?: TestClientOptions): Promise<TestResponse>;
+  delete(path: string, options?: TestClientOptions): Promise<TestResponse>;
+}
+
+// Test authentication token for contract tests
+const TEST_AUTH_TOKEN = 'test_firebase_jwt_token_for_contract_tests';
 
 // Simple HTTP client for testing API endpoints
 export const testClient: TestClient = {
-  async get(path: string): Promise<TestResponse> {
-    return makeRequest('GET', path);
+  async get(path: string, options?: TestClientOptions): Promise<TestResponse> {
+    return makeRequest('GET', path, undefined, options);
   },
 
-  async post(path: string, data?: unknown): Promise<TestResponse> {
-    return makeRequest('POST', path, data);
+  async post(path: string, data?: unknown, options?: TestClientOptions): Promise<TestResponse> {
+    return makeRequest('POST', path, data, options);
   },
 
-  async put(path: string, data?: unknown): Promise<TestResponse> {
-    return makeRequest('PUT', path, data);
+  async put(path: string, data?: unknown, options?: TestClientOptions): Promise<TestResponse> {
+    return makeRequest('PUT', path, data, options);
   },
 
-  async delete(path: string): Promise<TestResponse> {
-    return makeRequest('DELETE', path);
+  async delete(path: string, options?: TestClientOptions): Promise<TestResponse> {
+    return makeRequest('DELETE', path, undefined, options);
   },
 };
 
-async function makeRequest(method: string, path: string, data?: unknown): Promise<TestResponse> {
+async function makeRequest(
+  method: string,
+  path: string,
+  data?: unknown,
+  options?: TestClientOptions
+): Promise<TestResponse> {
   const baseUrl = process.env.TEST_BASE_URL || 'http://localhost:3000';
   const url = `${baseUrl}${path}`;
 
-  const options: RequestInit = {
+  const requestOptions: RequestInit = {
     method,
     headers: {
       'Content-Type': 'application/json',
     },
   };
 
+  // Add authentication header if requested
+  if (options?.authenticated || options?.authToken) {
+    const authToken = options.authToken || TEST_AUTH_TOKEN;
+    (requestOptions.headers as Record<string, string>)['Authorization'] = `Bearer ${authToken}`;
+  }
+
   if (data !== undefined) {
-    options.body = JSON.stringify(data);
+    requestOptions.body = JSON.stringify(data);
   }
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(url, requestOptions);
 
     // Parse response body
     let body: unknown;

@@ -112,3 +112,7 @@ Dev App Server is now running.
 └─────────────────────────┴───────────────┴─────────────────────┘
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
  
+[debug] [2025-09-21T11:22:30.116Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/slack-bload-messenger/trigger_multicast [none]
+[debug] [2025-09-21T11:22:30.116Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/slack-bload-messenger/trigger_multicast {"eventId":"90584fed-d900-4811-ad60-f1aa9866c3d8","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/slack-bload-messenger","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2025-09-21T11:22:30.115Z","data":{"uid":"OZ5UBX9DnQWYjbNdcaVJOwCUMe7U","email":"takezoux2@gmail.com","emailVerified":true,"metadata":{"creationTime":"2025-09-21T11:22:30.114Z","lastSignInTime":"2025-09-21T11:22:30.114Z"},"customClaims":{},"providerData":[{"rawId":"7987275094026285187310700541860638492865","providerId":"google.com","email":"takezoux2@gmail.com","federatedId":"7987275094026285187310700541860638492865"}]}}
+[debug] [2025-09-21T11:22:30.124Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/slack-bload-messenger/trigger_multicast 200
+[debug] [2025-09-21T11:22:30.124Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/slack-bload-messenger/trigger_multicast {"status":"multicast_acknowledged"}

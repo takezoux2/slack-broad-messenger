@@ -53,3 +53,4 @@ firebase-service-account.json
 next-env.d.ts
 
 client_secret.json
+serviceAccountKey.json
