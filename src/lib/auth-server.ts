@@ -1,7 +1,9 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { cookies } from 'next/headers';
+import type { NextRequest } from 'next/server';
 import { AuthError, AuthErrorType } from './auth-manager';
 import { getFirebaseFirestore } from './firebase';
+import { adminAuth } from './firebase-admin';
 import type { User } from './types/user';
 import { createUser, validateUser } from './types/user';
 
@@ -13,6 +15,43 @@ export interface ServerAuthResult {
   user: User | null;
   uid: string | null;
   error?: string;
+}
+
+/**
+ * Result from session token verification
+ */
+export interface SessionVerificationResult {
+  uid: string;
+  email: string;
+  emailVerified: boolean;
+  customClaims: Record<string, unknown>;
+}
+
+/**
+ * Extracts and verifies session token from cookies using Firebase Admin
+ */
+export async function verifySessionToken(request: NextRequest): Promise<SessionVerificationResult> {
+  try {
+    // Get session cookie
+    const sessionCookie = request.cookies.get('session')?.value;
+
+    if (!sessionCookie) {
+      throw new Error('No session cookie found');
+    }
+
+    // Verify session cookie using Firebase Admin
+    const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
+
+    return {
+      uid: decodedToken.uid,
+      email: decodedToken.email || '',
+      emailVerified: decodedToken.email_verified || false,
+      customClaims: (decodedToken.custom_claims || {}) as Record<string, unknown>,
+    };
+  } catch (error) {
+    console.error('Session token verification failed:', error);
+    throw new Error('Invalid or expired session');
+  }
 }
 
 /**
